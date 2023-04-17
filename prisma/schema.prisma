@@ -17,10 +17,74 @@ model Example {
 }
 
 model User {
-    id           String   @id @default(cuid())
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
-    email        String   @unique
-    nickname     String?
-    preferedMode String   @default("light")
+    id              String            @id @default(cuid())
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
+    email           String            @unique
+    nickname        String?
+    Team            Team[]
+    managers        TeamManagers[]
+    JoinInvitations JoinInvitations[]
+    Punishment      Punishment[]
+    TeamTresury     TeamTresury[]
+}
+
+model Team {
+    id              String            @id @default(cuid())
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
+    name            String
+    description     String?
+    members         User[]
+    Managers        TeamManagers[]
+    JoinInvitations JoinInvitations[]
+    Punishment      Punishment[]
+    TeamTresury     TeamTresury[]
+}
+
+model TeamManagers {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+    team      Team     @relation(fields: [teamId], references: [id])
+    teamId    String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+}
+
+model JoinInvitations {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    team      Team     @relation(fields: [teamId], references: [id])
+    teamId    String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+}
+
+model Punishment {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+    type      String
+    team      Team     @relation(fields: [teamId], references: [id])
+    teamId    String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+    payed     Boolean  @default(false)
+}
+
+model TeamTresury {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+    type      String
+    team      Team     @relation(fields: [teamId], references: [id])
+    teamId    String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+    payed     Boolean  @default(false)
 }
