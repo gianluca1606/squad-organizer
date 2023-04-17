@@ -3,7 +3,7 @@ import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-
+import Image from "next/image";
 export function NavBar() {
   const [mounted, setMounted] = useState(false);
   const user = useUser();
@@ -25,14 +25,16 @@ export function NavBar() {
     <nav className="light:bg-white border-gray-200  dark:bg-gray-900">
       <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
         <Link href="/" className="flex items-center">
-          <img
-            src="https://flowbite.com/docs/images/logo.svg"
-            className="mr-3 h-8"
-            alt="Flowbite Logo"
+          <Image
+            src={
+              currentTheme === "dark"
+                ? "/logo-no-background.png"
+                : "/logo-black.svg"
+            }
+            width={150}
+            height={150}
+            alt="Squad Organizer Logo"
           />
-          <span className="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">
-            Squad Organizer
-          </span>
         </Link>
         <button
           onClick={toggleHamburger}
@@ -69,7 +71,7 @@ export function NavBar() {
                 <li>
                   <Link
                     href="/"
-                    className="light:text-black block rounded py-2 pl-3 pr-4 dark:bg-gray-800 dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
+                    className="light:text-black block rounded py-2 pl-3 pr-4  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
                     aria-current="page"
                   >
                     Create a Team
@@ -78,7 +80,7 @@ export function NavBar() {
                 <li>
                   <Link
                     href="/punishments"
-                    className="light:text-black block rounded py-2 pl-3 pr-4 dark:bg-gray-800 dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
+                    className="light:text-black block rounded py-2 pl-3 pr-4  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
                     aria-current="page"
                   >
                     Manage punishments
@@ -87,7 +89,7 @@ export function NavBar() {
                 <li>
                   <Link
                     href="/treasury"
-                    className="light:text-black block rounded py-2 pl-3 pr-4 dark:bg-gray-800 dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
+                    className="light:text-black block rounded py-2 pl-3 pr-4  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
                     aria-current="page"
                   >
                     Team treasury

@@ -10,7 +10,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Create T3 App</title>
+        <title>Privacy</title>
         <meta name="description" content="Squad Organizer" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

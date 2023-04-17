@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { FC, ReactNode } from "react";
-
+import Image from "next/image";
 interface Props {
   children?: ReactNode;
 }
@@ -14,20 +15,18 @@ const Footer: FC = ({ children }: Props) => {
               href="https://flowbite.com/"
               className="mb-4 flex items-center sm:mb-0"
             >
-              <img
-                src="https://flowbite.com/docs/images/logo.svg"
-                className="mr-3 h-8"
-                alt="Flowbite Logo"
+              <Image
+                src="/logo-no-background.png"
+                width={150}
+                height={150}
+                alt="Squad Organizer Logo"
               />
-              <span className="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">
-                Squad Organizer
-              </span>
             </a>
             <ul className="mb-6 flex flex-wrap items-center text-sm font-medium text-gray-500 dark:text-gray-400 sm:mb-0">
               <li>
-                <a href="#" className="mr-4 hover:underline md:mr-6 ">
+                <Link className="mr-4 hover:underline md:mr-6" href="/about">
                   About
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="mr-4 hover:underline md:mr-6">
