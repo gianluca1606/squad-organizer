@@ -16,26 +16,26 @@ export const teamRouter = createTRPCRouter({
         description: z.string(),
       })
     )
-    .mutation(async ({ ctx }) => {
-      const dbUser = await ctx.prisma.user.findFirst({
-        where: {
-          clerkId: ctx.auth.userId,
+    .mutation(async ({ ctx, input }) => {
+      const teamData = await ctx.prisma.team.create({
+        data: {
+          name: input.name,
+          description: input.description,
+          managers: {
+            create: {
+              clerkId: ctx.auth.userId,
+            },
+          },
         },
       });
 
-      if (!dbUser) {
-        throw new TRPCError({
-          message: "User not found in database",
-          code: "NOT_FOUND",
-        });
-      }
-      return dbUser;
+      return teamData;
     }),
 
   delete: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.prisma.user.delete({
+      const user = await ctx.prisma.team.delete({
         where: {
           id: input.userId,
         },
@@ -45,6 +45,6 @@ export const teamRouter = createTRPCRouter({
 
   getAll: publicProcedure.query(({ ctx }) => {
     // TODO should only be able to get all users if you're an admin
-    return ctx.prisma.user.findMany();
+    return ctx.prisma.team.findMany();
   }),
 });

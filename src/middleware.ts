@@ -2,7 +2,14 @@ import { getAuth, withClerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicPaths = ["/", "/sign-in*", "/sign-up*", "/api/trpc/listings*"];
+const publicPaths = [
+  "/",
+  "/about",
+  "/privacy",
+  "/contact",
+  "/sign-in*",
+  "/sign-up*",
+];
 
 const isPublic = (path: string) => {
   return publicPaths.find((x) =>
@@ -11,12 +18,16 @@ const isPublic = (path: string) => {
 };
 
 export default withClerkMiddleware((request: NextRequest) => {
+  const { userId } = getAuth(request);
+  //onsole.log(getAuth(request).user);
+  if (userId && request.nextUrl.pathname === "/") {
+    const dashboardUrl = new URL("/dashboard", request.url);
+    return NextResponse.redirect(dashboardUrl);
+  }
   if (isPublic(request.nextUrl.pathname)) {
     return NextResponse.next();
   }
   // if the user is not signed in redirect them to the sign in page.
-  const { userId } = getAuth(request);
-  console.log(getAuth(request));
 
   if (!userId) {
     // redirect the users to /pages/sign-in/[[...index]].ts

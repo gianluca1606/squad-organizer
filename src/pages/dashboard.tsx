@@ -4,19 +4,20 @@ import Link from "next/link";
 
 import { api } from "~/utils/api";
 
-const Home: NextPage = () => {
+const Dashboard: NextPage = () => {
   //const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   return (
     <>
       <Head>
-        <title>Create T3 App</title>
+        <title>Dashboard</title>
         <meta name="description" content="Squad Organizer" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h3>super</h3>
+
+      <h4>Select your team</h4>
     </>
   );
 };
 
-export default Home;
+export default Dashboard;

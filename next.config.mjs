@@ -16,7 +16,8 @@ const config = {
    */
   i18n: {
     locales: ["en", "de"],
-    defaultLocale: "en",
+    defaultLocale: "de",
+    localeDetection: false,
   },
 };
 export default config;

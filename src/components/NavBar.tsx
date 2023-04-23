@@ -22,7 +22,7 @@ export function NavBar() {
     setHamburgerToggle(!hamburgerToggler);
   };
   return (
-    <nav className="light:bg-white border-gray-200  dark:bg-gray-900">
+    <nav className="border-gray-200 bg-white  dark:bg-gray-900">
       <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
         <Link href="/" className="flex items-center">
           <Image
@@ -65,45 +65,46 @@ export function NavBar() {
           }
           id="navbar-default"
         >
-          <ul className="light:md:bg-white light:bg-gray-50 mt-4 flex flex-col rounded-lg border border-gray-100 p-4 font-medium dark:border-gray-700 dark:bg-gray-800  md:mt-0 md:flex-row md:space-x-8 md:border-0 md:p-0 md:dark:bg-gray-900">
-            {user.isSignedIn && (
+          <ul className="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 font-medium dark:border-gray-700 dark:bg-gray-800 md:mt-0  md:flex-row md:space-x-8 md:border-0 md:bg-white md:p-0 md:dark:bg-gray-900">
+            {user.isLoaded && user.isSignedIn && (
               <>
                 <li>
                   <Link
                     href="/"
-                    className="light:text-black block rounded py-2 pl-3 pr-4  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
+                    className="block rounded py-2 pl-3 pr-4 text-black  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
                     aria-current="page"
                   >
-                    Create a Team
+                    Dashboard
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/punishments"
-                    className="light:text-black block rounded py-2 pl-3 pr-4  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
+                    href="/account-settings"
+                    className="block rounded py-2 pl-3 pr-4 text-black  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
                     aria-current="page"
                   >
-                    Manage punishments
+                    Account Settings
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/treasury"
-                    className="light:text-black block rounded py-2 pl-3 pr-4  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
+                    href="/account-settings"
+                    className="block rounded py-2 pl-3 pr-4 text-black  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
                     aria-current="page"
                   >
-                    Team treasury
+                    Invitations
                   </Link>
                 </li>
               </>
             )}
-            {!user.isSignedIn && (
+            {user.isLoaded && !user.isSignedIn && (
               <li>
-                <SignInButton>
-                  <span className="cursor-pointer text-white hover:text-blue-500">
-                    Sign In
-                  </span>
-                </SignInButton>
+                <Link
+                  href="/sign-in"
+                  className="cursor-pointer text-white hover:text-blue-500"
+                >
+                  Sign In
+                </Link>
               </li>
             )}
             <li>

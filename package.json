@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@clerk/localizations": "^1.11.3",
     "@clerk/nextjs": "^4.16.2",
     "@prisma/client": "^4.11.0",
     "@tanstack/react-query": "^4.28.0",
@@ -18,12 +19,16 @@
     "@trpc/react-query": "^10.18.0",
     "@trpc/server": "^10.18.0",
     "@types/lodash": "^4.14.194",
+    "@types/react-modal": "^3.16.0",
     "lodash": "^4.17.21",
     "next": "^13.2.4",
     "next-intl": "^2.13.1",
     "next-themes": "^0.2.1",
     "react": "18.2.0",
+    "react-cookie": "^4.1.1",
+    "react-dialog": "^1.0.2",
     "react-dom": "18.2.0",
+    "react-modal": "^3.16.1",
     "superjson": "1.12.2",
     "usehooks-ts": "^2.9.1",
     "zod": "^3.21.4"

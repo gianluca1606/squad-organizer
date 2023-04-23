@@ -4,13 +4,13 @@ import Link from "next/link";
 
 import { api } from "~/utils/api";
 
-const Home: NextPage = () => {
-  //const hello = api.example.hello.useQuery({ text: "from tRPC" });
+const Contact: NextPage = () => {
+  const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   return (
     <>
       <Head>
-        <title>Create T3 App</title>
+        <title>Privacy</title>
         <meta name="description" content="Squad Organizer" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -19,4 +19,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Contact;

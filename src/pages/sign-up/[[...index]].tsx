@@ -2,7 +2,7 @@ import { SignUp } from "@clerk/nextjs";
 
 const SignUpPage = () => (
   <div style={styles}>
-    <SignUp path="/sign-in" routing="path" signInUrl="/sign-up" />
+    <SignUp path="/sign-up" routing="path" signInUrl="/sign-in" />
   </div>
 );
 

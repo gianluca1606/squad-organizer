@@ -23,16 +23,9 @@ export const userRouter = createTRPCRouter({
     return user;
   }),
 
-  delete: protectedProcedure
-    .input(z.object({ userId: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const user = await ctx.prisma.user.delete({
-        where: {
-          id: input.userId,
-        },
-      });
-      return user;
-    }),
+  delete: protectedProcedure.mutation(async ({ ctx, input }) => {
+    await clerkClient.users.deleteUser(ctx.auth.userId);
+  }),
 
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const dbUser = await ctx.prisma.user.findFirst({
