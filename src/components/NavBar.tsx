@@ -2,14 +2,51 @@
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { api } from "~/utils/api";
+import { useLocalStorage, useOnClickOutside } from "usehooks-ts";
+
+const NAVBAR_ARRAY = [
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    translationKey: "dashboard",
+  },
+  {
+    name: "Teams",
+    href: "/teams",
+    translationKey: "dashboard",
+  },
+  {
+    name: "Invitations",
+    href: "/invitations",
+    translationKey: "dashboard",
+  },
+  {
+    name: "Settings",
+    href: "/account-settings",
+    translationKey: "dashboard",
+  },
+];
+
 export function NavBar() {
+  const teams = api.team.getTeamsForLoggedInUser.useQuery();
+  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
   const [mounted, setMounted] = useState(false);
   const user = useUser();
   const { systemTheme, theme, setTheme } = useTheme();
   const [hamburgerToggler, setHamburgerToggle] = useState(false);
+  const [switchTeamToggler, setTeamToggler] = useState(false);
+  const teamTogglerRef = useRef(null);
   const currentTheme = theme === "system" ? systemTheme : theme;
+  const handleClickOutside = () => {
+    if (switchTeamToggler) {
+      setTeamToggler(!switchTeamToggler);
+    }
+  };
+
+  useOnClickOutside(teamTogglerRef, handleClickOutside);
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -20,6 +57,19 @@ export function NavBar() {
 
   const toggleHamburger = () => {
     setHamburgerToggle(!hamburgerToggler);
+  };
+
+  const toggleSwitchTeam = () => {
+    setTeamToggler(!switchTeamToggler);
+  };
+  const setActualTeam = (id: string) => {
+    setActualTeamFunction(id);
+  };
+
+  const getTeamNameForId = () => {
+    return (
+      teams.data?.find((team) => team.id === actualTeam)?.name || "Select Team"
+    );
   };
   return (
     <nav className="border-gray-200 bg-white  dark:bg-gray-900">
@@ -61,42 +111,80 @@ export function NavBar() {
         </button>
         <div
           className={
-            hamburgerToggler ? "hidden" : "" + " w-full md:block md:w-auto"
+            hamburgerToggler ? "hidden " : "" + " w-full md:block md:w-auto"
           }
           id="navbar-default"
         >
           <ul className="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 font-medium dark:border-gray-700 dark:bg-gray-800 md:mt-0  md:flex-row md:space-x-8 md:border-0 md:bg-white md:p-0 md:dark:bg-gray-900">
             {user.isLoaded && user.isSignedIn && (
               <>
-                <li>
-                  <Link
-                    href="/"
-                    className="block rounded py-2 pl-3 pr-4 text-black  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
-                    aria-current="page"
-                  >
-                    Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/account-settings"
-                    className="block rounded py-2 pl-3 pr-4 text-black  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
-                    aria-current="page"
-                  >
-                    Account Settings
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/account-settings"
-                    className="block rounded py-2 pl-3 pr-4 text-black  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
-                    aria-current="page"
-                  >
-                    Invitations
-                  </Link>
-                </li>
+                {NAVBAR_ARRAY.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="block rounded py-2 pl-3 pr-4 text-black  dark:text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
+                      aria-current="page"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
               </>
             )}
+
+            <li>
+              <div className="relative">
+                <button
+                  id="dropdownDefaultButton"
+                  onClick={toggleSwitchTeam}
+                  data-dropdown-toggle="dropdown"
+                  className="mb-4 inline-flex items-center rounded-lg bg-blue-700 px-3 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:mb-0"
+                  type="button"
+                >
+                  {getTeamNameForId()}
+                  <svg
+                    className="ml-2 h-4 w-4"
+                    aria-hidden="true"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                {/* Dropdown menu */}
+                <div
+                  id="dropdown"
+                  ref={teamTogglerRef}
+                  className={
+                    "absolute z-10 w-44 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700 " +
+                    (switchTeamToggler ? "" : "hidden")
+                  }
+                >
+                  <ul
+                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                    aria-labelledby="dropdownDefaultButton"
+                  >
+                    {teams.data?.map((team) => (
+                      <li key={team.id}>
+                        <button
+                          onClick={() => setActualTeam(team.id)}
+                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                        >
+                          {team.name}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </li>
             {user.isLoaded && !user.isSignedIn && (
               <li>
                 <Link
@@ -119,7 +207,7 @@ export function NavBar() {
                 id="theme-toggle"
                 data-tooltip-target="tooltip-toggle"
                 type="button"
-                className="mt-5 rounded-lg p-2.5 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-700 md:mt-0"
+                className="block rounded-lg py-2 pl-3 pr-4 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-700 md:p-1"
               >
                 <svg
                   aria-hidden="true"

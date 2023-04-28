@@ -11,16 +11,17 @@ datasource db {
 }
 
 model Team {
-    id              String            @id @default(cuid())
-    createdAt       DateTime          @default(now())
-    updatedAt       DateTime          @updatedAt
-    name            String
-    description     String?
-    managers        TeamManagers[]
-    joinInvitations JoinInvitations[]
-    punishment      Punishment[]
-    teamTresury     TeamTresury[]
-    teamMember      TeamMember[]
+    id                        String                      @id @default(cuid())
+    createdAt                 DateTime                    @default(now())
+    updatedAt                 DateTime                    @updatedAt
+    name                      String
+    description               String?
+    location                  String?
+    managers                  TeamManagers[]
+    joinRequests              JoinRequests[]
+    punishmentAndContribution PunishmentAndContribution[]
+    teamBalance               TeamBalance[]
+    teamMember                TeamMember[]
 }
 
 model TeamMember {
@@ -28,19 +29,19 @@ model TeamMember {
     createdAt DateTime @default(now())
     clerkId   String
     teamId    String
-    team      Team     @relation(fields: [teamId], references: [id])
+    team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
 model TeamManagers {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    team      Team     @relation(fields: [teamId], references: [id])
+    team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
     teamId    String
     clerkId   String
 }
 
-model JoinInvitations {
+model JoinRequests {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -49,27 +50,36 @@ model JoinInvitations {
     clerkId   String
 }
 
-model Punishment {
+model PunishmentAndContribution {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    dueDate   DateTime
     name      String
     type      String
-    price     Float?
     team      Team     @relation(fields: [teamId], references: [id])
     teamId    String
     clerkId   String
     payed     Boolean  @default(false)
 }
 
-model PunishmentList {
+model Sponsor {
+    id          String   @id @default(cuid())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    name        String
+    description String
+    price       Float?
+}
+
+model PunishmentOrContributionList {
     id          String @id @default(cuid())
     name        String
     description String
     price       Float?
 }
 
-model TeamTresury {
+model TeamBalance {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -1,45 +1,31 @@
-import Link from "next/link";
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  FC,
-  ReactNode,
-  useEffect,
-  useState,
-} from "react";
-import { useCookies } from "react-cookie";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
+import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
 import { api } from "~/utils/api";
-import ReactModal from "react-modal";
 
-import Modal from "react-modal";
-import ConfirmDeleteDialog from "~/dialogs/ConfirmDeleteDialog";
-ReactModal.setAppElement("#modals");
-
-const customStyles = {
-  content: {
-    top: "50%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    padding: "0",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-  },
-};
+import ConfirmDeleteDialog from "~/components/dialogs/ConfirmDeleteDialog";
+import { useOnClickOutside } from "usehooks-ts";
+import DialogLayout from "~/components/dialogs/DialogLayout";
 
 const AccountSettingsForm: FC = () => {
+  const ref = useRef(null);
+  const handleClickOutside = () => {
+    // Your custom logic here
+    setShowModal(false);
+  };
+
+  useOnClickOutside(ref, handleClickOutside);
+  const [showModal, setShowModal] = useState(false);
   const deleteUser = api.user.delete.useMutation();
   const [cookies, setCookie, removeCookie] = useCookies(["locale"]);
   const [localeCookie, setLocaleCookie] = useState("");
   //@ts-ignore
   const t: any = useTranslations("Settings");
   const router = useRouter();
-  const [modalIsOpen, setIsOpen] = useState(false);
 
   function openModal() {
-    setIsOpen(true);
+    setShowModal(true);
   }
 
   function afterOpenModal() {
@@ -48,7 +34,7 @@ const AccountSettingsForm: FC = () => {
   }
 
   function closeModal() {
-    setIsOpen(false);
+    setShowModal(false);
   }
   const handleChange = (event: ChangeEvent<HTMLSelectElement>): void => {
     setLocaleCookie(event.target.value);
@@ -113,23 +99,19 @@ const AccountSettingsForm: FC = () => {
 
         <button
           type="submit"
-          onClick={openModal}
+          onClick={() => setShowModal(true)}
           className="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
         >
           Save
         </button>
       </form>
-      <Modal
-        isOpen={modalIsOpen}
-        onAfterOpen={afterOpenModal}
-        onRequestClose={closeModal}
-        style={customStyles}
-        // className="rounded-lg"
-        // overlayClassName="rounded-lg"
-        contentLabel="Example Modal"
-      >
-        <ConfirmDeleteDialog closeModal={closeModal}></ConfirmDeleteDialog>
-      </Modal>
+      {showModal ? (
+        <>
+          <DialogLayout innerRef={ref}>
+            <ConfirmDeleteDialog closeModal={closeModal}></ConfirmDeleteDialog>
+          </DialogLayout>
+        </>
+      ) : null}
     </>
   );
 };
