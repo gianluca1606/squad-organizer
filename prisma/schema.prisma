@@ -11,17 +11,18 @@ datasource db {
 }
 
 model Team {
-    id                        String                      @id @default(cuid())
-    createdAt                 DateTime                    @default(now())
-    updatedAt                 DateTime                    @updatedAt
-    name                      String
-    description               String?
-    location                  String?
-    managers                  TeamManagers[]
-    joinRequests              JoinRequests[]
-    punishmentAndContribution PunishmentAndContribution[]
-    teamBalance               TeamBalance[]
-    teamMember                TeamMember[]
+    id                           String                         @id @default(cuid())
+    createdAt                    DateTime                       @default(now())
+    updatedAt                    DateTime                       @updatedAt
+    name                         String
+    description                  String?
+    location                     String?
+    managers                     TeamManagers[]
+    joinRequests                 JoinRequests[]
+    punishmentAndContribution    PunishmentAndContribution[]
+    teamBalance                  TeamBalance[]
+    teamMember                   TeamMember[]
+    PunishmentOrContributionList PunishmentOrContributionList[]
 }
 
 model TeamMember {
@@ -45,7 +46,7 @@ model JoinRequests {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    team      Team     @relation(fields: [teamId], references: [id])
+    team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
     teamId    String
     clerkId   String
 }
@@ -57,7 +58,7 @@ model PunishmentAndContribution {
     dueDate   DateTime
     name      String
     type      String
-    team      Team     @relation(fields: [teamId], references: [id])
+    team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
     teamId    String
     clerkId   String
     payed     Boolean  @default(false)
@@ -77,6 +78,8 @@ model PunishmentOrContributionList {
     name        String
     description String
     price       Float?
+    team        Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId      String
 }
 
 model TeamBalance {
@@ -85,7 +88,7 @@ model TeamBalance {
     updatedAt DateTime @updatedAt
     name      String
     type      String
-    team      Team     @relation(fields: [teamId], references: [id])
+    team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
     teamId    String
     clerkId   String
     payed     Boolean  @default(false)

@@ -5,22 +5,50 @@ import { useForm } from "react-hook-form";
 import { useLocalStorage } from "usehooks-ts";
 import { CreateEditTeamProps } from "~/interfaces/CreateEditTeamProps";
 import { RouterInputs, api } from "~/utils/api";
+import { PrimaryButton } from "../controls/PrimaryButton";
+import { AlternativeButton } from "../controls/AlternativeButton";
 
 type CreateTeamInput = RouterInputs["team"]["create"];
 
-const CreateTeamForm: FC<CreateEditTeamProps> = ({ closeModal }) => {
+const CreateTeamForm: FC<CreateEditTeamProps> = ({
+  closeModal,
+  edit,
+  data,
+}) => {
   const createTeam = api.team.create.useMutation();
+  const editTeam = api.team.update.useMutation();
+  const getTeamById = api.team.getTeamData.useQuery({ teamId: data?.id });
   const loadTeams = api.team.getTeamsForLoggedInUser.useQuery();
   const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
 
-  const { register, handleSubmit } = useForm<CreateTeamInput>();
+  const { register, handleSubmit, setValue } = useForm<CreateTeamInput>();
 
+  if (edit) {
+    useEffect(() => {
+      setValue("name", data!.name);
+      setValue("description", data?.description ? data?.description : "");
+      setValue("location", data?.location ? data?.location : "");
+    }, [data]);
+  }
   const onSubmit = (formData: CreateTeamInput) => {
-    createTeam.mutateAsync(formData).then((result) => {
-      setActualTeamFunction(result.id);
-      loadTeams.refetch();
-      closeModal();
-    });
+    if (edit) {
+      editTeam.mutateAsync({ ...formData, teamId: data!.id }).then((result) => {
+        getTeamById.refetch();
+        setActualTeamFunction(result.id);
+        loadTeams.refetch();
+        closeModal();
+      });
+    } else {
+      createTeam.mutateAsync(formData).then((result) => {
+        setActualTeamFunction(result.id);
+        loadTeams.refetch();
+        closeModal();
+      });
+    }
+  };
+
+  const save = () => {
+    handleSubmit(onSubmit)();
   };
   //@ts-ignore
   //const t: any = useTranslations("Settings");
@@ -33,7 +61,7 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ closeModal }) => {
           {/* Modal header */}
           <div className="flex items-start justify-between rounded-t border-b p-4 dark:border-gray-600">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Create your team
+              {edit ? "Edit team" : "Create team"}
             </h3>
             <button
               onClick={closeModal}
@@ -108,22 +136,18 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ closeModal }) => {
           </div>
           {/* Modal footer */}
           <div className="flex items-center space-x-2 rounded-b border-t border-gray-200 p-6 dark:border-gray-600">
-            <button
-              onClick={handleSubmit(onSubmit)}
-              data-modal-hide="defaultModal"
-              type="submit"
-              className="rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              Save
-            </button>
-            <button
+            <PrimaryButton
+              isDisabled={editTeam.isLoading || createTeam.isLoading}
+              isLoading={editTeam.isLoading || createTeam.isLoading}
+              onClick={save}
+              text="Save"
+            />
+            <AlternativeButton
+              isLoading={null}
+              isDisabled={editTeam.isLoading || createTeam.isLoading}
               onClick={closeModal}
-              data-modal-hide="defaultModal"
-              type="button"
-              className="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-600"
-            >
-              Close
-            </button>
+              text="Close"
+            />
           </div>
         </div>
       </div>

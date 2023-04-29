@@ -41,10 +41,33 @@ export const teamRouter = createTRPCRouter({
       return teamData;
     }),
 
+  update: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        description: z.string().optional(),
+        location: z.string().optional(),
+        teamId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { name, description, location, teamId } = input;
+      const updated = await ctx.prisma.team.update({
+        data: {
+          name,
+          description,
+          location,
+        },
+        where: {
+          id: teamId,
+        },
+      });
+      return updated;
+    }),
+
   delete: protectedProcedure
     .input(z.object({ teamId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      console.log(input.teamId);
       const deleted = await ctx.prisma.team.delete({
         where: {
           id: input.teamId,
@@ -85,7 +108,7 @@ export const teamRouter = createTRPCRouter({
     }),
 
   getMembers: protectedProcedure
-    .input(z.object({ teamId: z.string().optional() }))
+    .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       //check if user is member of team or manager of team
       const isUserManager = await ctx.prisma.teamManagers.findFirst({
@@ -130,9 +153,28 @@ export const teamRouter = createTRPCRouter({
       return publicMembers;
     }),
   getAll: protectedProcedure.query(({ ctx }) => {
-    // TODO should only be able to get all users if you're an admin
+    // TODO should only be able to get all teams if you're an admin
     return ctx.prisma.team.findMany({
       where: { managers: { some: { clerkId: ctx.auth.userId } } },
     });
   }),
+
+  getAllContributionsAndPunishmentsForTeam: protectedProcedure
+    .input(z.object({ teamId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      //check if user is member of team or manager of team
+      const isUserManager = await ctx.prisma.teamManagers.findFirst({
+        where: { teamId: input.teamId, clerkId: ctx.auth.userId },
+      });
+
+      const punishments =
+        await ctx.prisma.punishmentOrContributionList.findMany({
+          where: { teamId: input.teamId },
+        });
+
+      return {
+        punishments,
+        isUserManager: isUserManager ? true : false,
+      };
+    }),
 });

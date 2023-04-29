@@ -1,8 +1,12 @@
+import { NextApiRequestCookies } from "next/dist/server/api-utils";
+
 const cookiesUtil = {
-  getCookie: (name: string) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(";").shift();
+  getLocaleCookieValue: (cookies: NextApiRequestCookies) => {
+    if (cookies?.locale) {
+      return cookies.locale;
+    } else {
+      return "en";
+    }
   },
 };
 

@@ -1,20 +1,18 @@
 import { FC } from "react";
 import { ButtonProps } from "~/interfaces/ButtonProps";
 
-export const PrimaryButton: FC<ButtonProps> = ({
+export const AlternativeButton: FC<ButtonProps> = ({
   text,
-  isLoading,
   onClick,
+  isLoading,
+  isDisabled,
 }: ButtonProps) => (
   <button
+    disabled={isDisabled ? true : false}
     onClick={onClick}
     type="button"
-    className={
-      "mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" +
-      (isLoading ? " cursor-not-allowed opacity-50" : "")
-    }
+    className="mb-2 mr-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
   >
-    {" "}
     {isLoading ? (
       <>
         <svg

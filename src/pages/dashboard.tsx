@@ -19,8 +19,6 @@ const Dashboard: NextPage = () => {
       </Head>
 
       <div className="h-full w-full">
-        {" "}
-        <h4>Select your team</h4>
         <Transactions></Transactions>
       </div>
     </>
