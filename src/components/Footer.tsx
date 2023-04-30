@@ -8,7 +8,7 @@ interface Props {
 const Footer: FC = ({ children }: Props) => {
   return (
     <>
-      <footer className="light:bg-white m-4 rounded-lg shadow dark:bg-gray-900">
+      <footer className="light:bg-white m-4 rounded-lg shadow dark:bg-background">
         <div className="mx-auto w-full max-w-screen-xl p-4 md:py-8">
           <div className="sm:flex sm:items-center sm:justify-between">
             <a

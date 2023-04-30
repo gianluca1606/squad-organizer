@@ -1,6 +1,5 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import { useRef, useState } from "react";
 import {
   useCopyToClipboard,
@@ -10,11 +9,29 @@ import {
 import CreateTeamForm from "~/components/forms/CreateTeamForm";
 import PunishmentsAndContributionsTable from "~/components/lists/PunishmentsAndContributionsTable";
 import TeamMembersList from "~/components/lists/TeamMembersList";
-import DialogLayout from "~/components/dialogs/DialogLayout";
 
 import { api } from "~/utils/api";
-import { WarnButton } from "~/components/controls/WarnButton";
-import { PrimaryButton } from "~/components/controls/PrimaryButton";
+import { Button } from "components/ui/button";
+import { Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
 
 const TeamsPage: NextPage = () => {
   const [edit, setEdit] = useState(false);
@@ -22,13 +39,8 @@ const TeamsPage: NextPage = () => {
   const teamData = api.team.getTeamData.useQuery({ teamId: actualTeam });
   const deleteTeam = api.team.delete.useMutation();
   const [showModal, setShowModal] = useState(false);
-  const ref = useRef(null);
   const [value, copy] = useCopyToClipboard();
 
-  const handleClickOutside = () => {
-    setShowModal(false);
-  };
-  useOnClickOutside(ref, handleClickOutside);
   const closeCreateEditTeamModal = () => {
     setEdit(false);
     setShowModal(false);
@@ -39,9 +51,9 @@ const TeamsPage: NextPage = () => {
     setShowModal(true);
   };
 
-  const openEditTeamModal = () => {
-    setEdit(true);
-    setShowModal(true);
+  const openOrCloseEditTeamModal = () => {
+    setEdit(!edit);
+    setShowModal(!showModal);
   };
   const deleteTeamMutation = () => {
     deleteTeam.mutate({ teamId: actualTeam });
@@ -65,26 +77,72 @@ const TeamsPage: NextPage = () => {
       <div className=" flex w-full flex-col items-center">
         <div className="relative block w-full rounded-lg border border-gray-200 bg-white p-6 shadow dark:border-gray-700 dark:bg-gray-800 sm:w-10/12 md:w-8/12 2xl:w-6/12 ">
           <div className="absolute  right-0 top-0 ">
-            <button
-              type="submit"
-              onClick={openCreateTeamModal}
-              className="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
-            >
-              Create team
-            </button>
-            <button
-              type="submit"
-              onClick={openEditTeamModal}
-              className="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
-            >
-              Edit team
-            </button>
-            <WarnButton
-              isDisabled={deleteTeam.isLoading}
-              isLoading={deleteTeam.isLoading}
-              text="Delete team"
-              onClick={() => deleteTeamMutation()}
-            ></WarnButton>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="secondary">Create team</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your account and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+                <CreateTeamForm
+                  edit={edit}
+                  data={teamData.data}
+                  closeModal={closeCreateEditTeamModal}
+                ></CreateTeamForm>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={showModal} onOpenChange={openOrCloseEditTeamModal}>
+              <DialogTrigger asChild>
+                <Button variant="secondary" onClick={openOrCloseEditTeamModal}>
+                  Edit team
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your account and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+                <CreateTeamForm
+                  edit={true}
+                  data={teamData.data}
+                  closeModal={closeCreateEditTeamModal}
+                ></CreateTeamForm>
+              </DialogContent>
+            </Dialog>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" disabled={deleteTeam.isLoading}>
+                  Delete Account
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your account and remove your data from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction asChild>
+                    <Button onClick={() => deleteTeamMutation()}>
+                      Continue{" "}
+                    </Button>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
 
           <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -102,12 +160,13 @@ const TeamsPage: NextPage = () => {
           </p>
 
           <input
-            disabled={true}
+            //disabled={true}
             type="text"
             name="shareurl"
             id="share-team-url"
-            onClick={() => copy(getHostUrl() + "/join/" + actualTeam)}
-            value={getHostUrl() + "/join/" + actualTeam}
+            readOnly={true}
+            onClick={() => copy(getHostUrl() + "/join?teamId=" + actualTeam)}
+            value={getHostUrl() + "/join?teamId=" + actualTeam}
             className="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 mt-4 block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 sm:text-sm"
             placeholder="Search for members"
           />
@@ -120,28 +179,26 @@ const TeamsPage: NextPage = () => {
             Strafenkatalog / Mannschaftsbeitraege
           </h5>
           <div className="absolute  right-0 top-0 ">
-            <PrimaryButton
-              isDisabled={false}
-              onClick={openCreateTeamModal}
-              text="Create strafe"
-              isLoading={false}
-            />
+            <Dialog>
+              <DialogTrigger>
+                <Button asChild variant="default">
+                  Create strafe
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your account and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </div>
           <PunishmentsAndContributionsTable></PunishmentsAndContributionsTable>
         </div>
       </div>
-
-      {showModal ? (
-        <>
-          <DialogLayout innerRef={ref}>
-            <CreateTeamForm
-              edit={edit}
-              data={teamData.data}
-              closeModal={closeCreateEditTeamModal}
-            ></CreateTeamForm>
-          </DialogLayout>
-        </>
-      ) : null}
     </>
   );
 };

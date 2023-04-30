@@ -1,12 +1,10 @@
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/router";
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { Button } from "components/ui/button";
+import { Loader2 } from "lucide-react";
+import { FC, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocalStorage } from "usehooks-ts";
 import { CreateEditTeamProps } from "~/interfaces/CreateEditTeamProps";
 import { RouterInputs, api } from "~/utils/api";
-import { PrimaryButton } from "../controls/PrimaryButton";
-import { AlternativeButton } from "../controls/AlternativeButton";
 
 type CreateTeamInput = RouterInputs["team"]["create"];
 
@@ -136,18 +134,22 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({
           </div>
           {/* Modal footer */}
           <div className="flex items-center space-x-2 rounded-b border-t border-gray-200 p-6 dark:border-gray-600">
-            <PrimaryButton
-              isDisabled={editTeam.isLoading || createTeam.isLoading}
-              isLoading={editTeam.isLoading || createTeam.isLoading}
+            <Button
+              disabled={editTeam.isLoading || createTeam.isLoading}
               onClick={save}
-              text="Save"
-            />
-            <AlternativeButton
-              isLoading={null}
-              isDisabled={editTeam.isLoading || createTeam.isLoading}
+            >
+              {editTeam.isLoading || createTeam.isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Save"
+              )}
+            </Button>
+            <Button
+              disabled={editTeam.isLoading || createTeam.isLoading}
               onClick={closeModal}
-              text="Close"
-            />
+            >
+              Close
+            </Button>
           </div>
         </div>
       </div>

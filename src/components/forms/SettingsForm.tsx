@@ -4,19 +4,21 @@ import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { api } from "~/utils/api";
 
-import ConfirmDeleteDialog from "~/components/dialogs/ConfirmDeleteDialog";
 import { useOnClickOutside } from "usehooks-ts";
-import DialogLayout from "~/components/dialogs/DialogLayout";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "components/ui/alert-dialog";
+import { Button } from "components/ui/button";
 
 const AccountSettingsForm: FC = () => {
-  const ref = useRef(null);
-  const handleClickOutside = () => {
-    // Your custom logic here
-    setShowModal(false);
-  };
-
-  useOnClickOutside(ref, handleClickOutside);
-  const [showModal, setShowModal] = useState(false);
   const deleteUser = api.user.delete.useMutation();
   const [cookies, setCookie, removeCookie] = useCookies(["locale"]);
   const [localeCookie, setLocaleCookie] = useState("");
@@ -24,9 +26,6 @@ const AccountSettingsForm: FC = () => {
   const t: any = useTranslations("Settings");
   const router = useRouter();
 
-  function openModal() {
-    setShowModal(true);
-  }
   useEffect(() => {
     if (!cookies.locale) {
       setLocaleCookie("en");
@@ -35,14 +34,7 @@ const AccountSettingsForm: FC = () => {
       setLocaleCookie(cookies.locale);
     }
   }, []);
-  function afterOpenModal() {
-    // references are now sync'd and can be accessed.
-    // subtitle.style.color = '#f00';
-  }
 
-  function closeModal() {
-    setShowModal(false);
-  }
   const handleChange = (event: ChangeEvent<HTMLSelectElement>): void => {
     setLocaleCookie(event.target.value);
     setCookie("locale", event.target.value, { path: "/" });
@@ -79,30 +71,30 @@ const AccountSettingsForm: FC = () => {
             </select>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={deleteUserFn}
-          disabled={deleteUser.isLoading}
-          className="mb-2 mr-2 rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-        >
-          Delete Account
-        </button>
 
-        {/* <button
-          type="submit"
-          onClick={() => setShowModal(true)}
-          className="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
-        >
-          Save
-        </button> */}
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive" disabled={deleteUser.isLoading}>
+              Delete Account
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your
+                account and remove your data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={deleteUserFn}>
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </form>
-      {showModal ? (
-        <>
-          <DialogLayout innerRef={ref}>
-            <ConfirmDeleteDialog closeModal={closeModal}></ConfirmDeleteDialog>
-          </DialogLayout>
-        </>
-      ) : null}
     </>
   );
 };

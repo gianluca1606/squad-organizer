@@ -2,6 +2,10 @@ import { Team } from "@prisma/client";
 import { ModalProps } from "./ModalProps";
 
 export type CreateEditTeamProps = ModalProps & {
-  data: Team | null | undefined;
+  data: TeamDataWithAlreadyInTeam | null | undefined;
   edit: boolean;
+};
+
+export type TeamDataWithAlreadyInTeam = Team & {
+  isUserAlreadyInTeam: boolean;
 };

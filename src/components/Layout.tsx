@@ -10,7 +10,7 @@ const Layout: FC<Props> = ({ children }: Props) => {
   return (
     <div className="flex h-screen flex-col">
       <NavBar></NavBar>
-      <div className="flex  flex-grow flex-col bg-white text-black dark:bg-gray-900 dark:text-white">
+      <div className="flex  flex-grow flex-col bg-white text-black dark:bg-background dark:text-white">
         <main className="flex  flex-grow flex-col items-center justify-center ">
           {children}
         </main>

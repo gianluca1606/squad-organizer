@@ -1,5 +1,4 @@
 import App, { AppContext, AppProps, type AppType } from "next/app";
-
 import { api } from "~/utils/api";
 import { deDe, enUS } from "@clerk/localizations";
 import "~/styles/globals.css";

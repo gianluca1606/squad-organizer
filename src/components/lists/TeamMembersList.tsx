@@ -1,20 +1,37 @@
-import { FC } from "react";
-import { useLocalStorage } from "usehooks-ts";
+import { ChangeEvent, FC, useEffect, useState } from "react";
+import { useDebounce, useLocalStorage } from "usehooks-ts";
 import { PublicUser } from "~/interfaces/PublicUser";
 import { api } from "~/utils/api";
 import { SkeletonList } from "./SkeletonList";
+import { getNameOrMail } from "~/utils/getNameOrMail";
 
 const TeamMembersList: FC = () => {
   const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
-  const teamMembers = api.team.getMembers.useQuery({ teamId: actualTeam });
-  function getNameOrMail(member: PublicUser) {
-    if (member.firstName && member.lastName) {
-      return member.firstName + " " + member.lastName;
-    } else {
-      return member.emailAddresses[0]?.emailAddress;
-    }
-  }
+  const [listData, setListData] = useState<PublicUser[] | null | undefined>(
+    null
+  );
+  const [searchValue, setSearchValue] = useState<string>("");
+  const debouncedValue = useDebounce<string>(searchValue, 500);
 
+  const teamMembers = api.team.getMembers.useQuery({ teamId: actualTeam });
+  useEffect(() => {
+    if (teamMembers.data) {
+      setListData(teamMembers.data);
+    }
+  }, [teamMembers.data]);
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(event.target.value);
+  };
+
+  useEffect(() => {
+    const filteredData = teamMembers.data?.filter((member) => {
+      const name = getNameOrMail(member);
+      return name.toLowerCase().includes(debouncedValue.toLowerCase());
+    });
+    setListData(filteredData);
+    // Do fetch here...
+    // Triggers when "debouncedValue" changes
+  }, [debouncedValue]);
   return (
     <div className="mt-6 overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:h-fit sm:p-6">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -49,6 +66,8 @@ const TeamMembersList: FC = () => {
                 </svg>
               </div>
               <input
+                value={searchValue}
+                onChange={handleChange}
                 placeholder="Search for members"
                 disabled={teamMembers.isLoading}
                 type="search"
@@ -77,7 +96,7 @@ const TeamMembersList: FC = () => {
           >
             {" "}
             {teamMembers.isLoading && <SkeletonList />}
-            {teamMembers.data?.map((member) => (
+            {listData?.map((member) => (
               <li className="py-3 sm:py-4" key={member.id}>
                 <div className="flex items-center justify-between">
                   <div className="flex min-w-0 items-center">
@@ -93,7 +112,7 @@ const TeamMembersList: FC = () => {
                     </div>
                   </div>
                   <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                    $445,467
+                    €445,467
                   </div>
                 </div>
               </li>

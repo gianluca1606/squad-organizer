@@ -2,6 +2,7 @@ import { User } from "@clerk/nextjs/api";
 import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { TeamDataWithAlreadyInTeam } from "~/interfaces/CreateEditTeamProps";
 import { PublicUser } from "~/interfaces/PublicUser";
 
 import {
@@ -96,15 +97,25 @@ export const teamRouter = createTRPCRouter({
   getTeamData: protectedProcedure
     .input(z.object({ teamId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
+      let teamData;
       if (!input.teamId) {
-        return await ctx.prisma.team.findFirst({
+        teamData = await ctx.prisma.team.findFirst({
           where: { managers: { some: { clerkId: ctx.auth.userId } } },
         });
       } else {
-        return await ctx.prisma.team.findFirst({
+        teamData = await ctx.prisma.team.findFirst({
           where: { id: input.teamId },
         });
       }
+
+      const isUserAlreadyInTeam = await ctx.prisma.teamMember.findFirst({
+        where: { teamId: teamData?.id, clerkId: ctx.auth.userId },
+      });
+
+      return {
+        ...teamData,
+        isUserAlreadyInTeam: !!isUserAlreadyInTeam,
+      } as TeamDataWithAlreadyInTeam;
     }),
 
   getMembers: protectedProcedure

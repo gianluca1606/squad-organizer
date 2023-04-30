@@ -72,7 +72,7 @@ export function NavBar() {
     );
   };
   return (
-    <nav className="border-gray-200 bg-white  dark:bg-gray-900">
+    <nav className="border-gray-200 bg-white   dark:bg-background">
       <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
         <Link href="/" className="flex items-center">
           <Image
@@ -115,7 +115,7 @@ export function NavBar() {
           }
           id="navbar-default"
         >
-          <ul className="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 font-medium dark:border-gray-700 dark:bg-gray-800 md:mt-0  md:flex-row md:space-x-8 md:border-0 md:bg-white md:p-0 md:dark:bg-gray-900">
+          <ul className="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 font-medium dark:border-gray-700 dark:bg-background md:mt-0  md:flex-row md:space-x-8 md:border-0 md:bg-white md:p-0 md:dark:bg-background">
             {user.isLoaded && user.isSignedIn && (
               <>
                 {NAVBAR_ARRAY.map((item) => (
@@ -129,62 +129,62 @@ export function NavBar() {
                     </Link>
                   </li>
                 ))}
+                <li>
+                  <div className="relative">
+                    <button
+                      id="dropdownDefaultButton"
+                      onClick={toggleSwitchTeam}
+                      data-dropdown-toggle="dropdown"
+                      className="mb-4 inline-flex items-center rounded-lg bg-blue-700 px-3 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:mb-0"
+                      type="button"
+                    >
+                      {getTeamNameForId()}
+                      <svg
+                        className="ml-2 h-4 w-4"
+                        aria-hidden="true"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+                    {/* Dropdown menu */}
+                    <div
+                      id="dropdown"
+                      ref={teamTogglerRef}
+                      className={
+                        "absolute z-10 w-44 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700 " +
+                        (switchTeamToggler ? "" : "hidden")
+                      }
+                    >
+                      <ul
+                        className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                        aria-labelledby="dropdownDefaultButton"
+                      >
+                        {teams.data?.map((team) => (
+                          <li key={team.id}>
+                            <button
+                              onClick={() => setActualTeam(team.id)}
+                              className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                            >
+                              {team.name}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </li>
               </>
             )}
 
-            <li>
-              <div className="relative">
-                <button
-                  id="dropdownDefaultButton"
-                  onClick={toggleSwitchTeam}
-                  data-dropdown-toggle="dropdown"
-                  className="mb-4 inline-flex items-center rounded-lg bg-blue-700 px-3 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:mb-0"
-                  type="button"
-                >
-                  {getTeamNameForId()}
-                  <svg
-                    className="ml-2 h-4 w-4"
-                    aria-hidden="true"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-                {/* Dropdown menu */}
-                <div
-                  id="dropdown"
-                  ref={teamTogglerRef}
-                  className={
-                    "absolute z-10 w-44 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700 " +
-                    (switchTeamToggler ? "" : "hidden")
-                  }
-                >
-                  <ul
-                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                    aria-labelledby="dropdownDefaultButton"
-                  >
-                    {teams.data?.map((team) => (
-                      <li key={team.id}>
-                        <button
-                          onClick={() => setActualTeam(team.id)}
-                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                        >
-                          {team.name}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </li>
             {user.isLoaded && !user.isSignedIn && (
               <li>
                 <Link
