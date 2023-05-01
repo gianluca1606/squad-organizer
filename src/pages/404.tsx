@@ -2,7 +2,7 @@ import { NextPage } from "next";
 
 const NotFoundPage: NextPage = () => {
   return (
-    <main className="bg-gray-50 dark:bg-gray-900">
+    <main className="bg-gray-50 dark:bg-background">
       <div className="block md:max-w-lg">
         <img
           src="https://flowbite-admin-dashboard.vercel.app/images/illustrations/404.svg"

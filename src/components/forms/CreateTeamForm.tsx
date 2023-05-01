@@ -1,18 +1,27 @@
+import { DialogClose } from "@radix-ui/react-dialog";
 import { Button } from "components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Edit, Loader2, Plus } from "lucide-react";
 import { FC, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocalStorage } from "usehooks-ts";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Textarea } from "~/components/ui/textarea";
 import { CreateEditTeamProps } from "~/interfaces/CreateEditTeamProps";
 import { RouterInputs, api } from "~/utils/api";
 
 type CreateTeamInput = RouterInputs["team"]["create"];
 
-const CreateTeamForm: FC<CreateEditTeamProps> = ({
-  closeModal,
-  edit,
-  data,
-}) => {
+const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
   const createTeam = api.team.create.useMutation();
   const editTeam = api.team.update.useMutation();
   const getTeamById = api.team.getTeamData.useQuery({ teamId: data?.id });
@@ -21,26 +30,27 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({
 
   const { register, handleSubmit, setValue } = useForm<CreateTeamInput>();
 
-  if (edit) {
-    useEffect(() => {
+  useEffect(() => {
+    if (edit && data) {
       setValue("name", data!.name);
       setValue("description", data?.description ? data?.description : "");
       setValue("location", data?.location ? data?.location : "");
-    }, [data]);
-  }
+    }
+  }, [data]);
+
   const onSubmit = (formData: CreateTeamInput) => {
     if (edit) {
       editTeam.mutateAsync({ ...formData, teamId: data!.id }).then((result) => {
         getTeamById.refetch();
         setActualTeamFunction(result.id);
         loadTeams.refetch();
-        closeModal();
+        //closeModal();
       });
     } else {
       createTeam.mutateAsync(formData).then((result) => {
         setActualTeamFunction(result.id);
         loadTeams.refetch();
-        closeModal();
+        //closeModal();
       });
     }
   };
@@ -53,106 +63,74 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({
 
   return (
     <>
-      <div className="w-full ">
-        {/* Modal content */}
-        <div className="relative rounded-lg bg-white shadow dark:bg-gray-700">
-          {/* Modal header */}
-          <div className="flex items-start justify-between rounded-t border-b p-4 dark:border-gray-600">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {edit ? "Edit team" : "Create team"}
-            </h3>
-            <button
-              onClick={closeModal}
-              type="button"
-              className="ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
-              data-modal-hide="defaultModal"
-            >
-              <svg
-                aria-hidden="true"
-                className="h-5 w-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span className="sr-only">Close modal</span>
-            </button>
-          </div>
-          {/* Modal body */}
-          <div className="space-y-6 p-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="w-full sm:w-1/2">
-              <div className="mb-6">
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="ghost">
+            {edit ? (
+              <Edit className="h-5 w-5 " />
+            ) : (
+              <Plus className="h-5 w-5 " />
+            )}
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle> {edit ? "Edit team" : "Create team"}</DialogTitle>
+            <DialogDescription>Create a team and organize it</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit(onSubmit)} className="w-full sm:w-1/2">
+            <div className="mb-6">
+              <Label htmlFor="teamname">Team Name</Label>
+              <Input
+                type="teamname"
+                id="teamname"
+                placeholder="Email"
+                required
+                {...register("name", { required: true })}
+              />
+
+              <Label htmlFor="teamname">Location</Label>
+              <Input
+                type="location"
+                id="location"
+                placeholder="Location"
+                required
+                {...register("location", { required: true })}
+              />
+
+              <div>
                 <label
-                  htmlFor="teamname"
+                  htmlFor="message"
                   className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Team Name
+                  Your description
                 </label>
-                <input
-                  type="text"
-                  id="nickname"
-                  {...register("name", { required: true })}
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                  required
+                <Textarea
+                  id="message"
+                  placeholder="Write your thoughts here.."
+                  {...register("description", { required: true })}
+                  rows={4}
                 />
-                <label
-                  htmlFor="teamname"
-                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Location
-                </label>
-                <input
-                  type="text"
-                  id="nickname"
-                  {...register("location", { required: false })}
-                  className="mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                  required
-                />
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Your description
-                  </label>
-                  <textarea
-                    id="message"
-                    {...register("description", { required: true })}
-                    rows={4}
-                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                    placeholder="Write your thoughts here..."
-                    defaultValue={""}
-                  />
-                </div>
               </div>
-            </form>
-          </div>
-          {/* Modal footer */}
-          <div className="flex items-center space-x-2 rounded-b border-t border-gray-200 p-6 dark:border-gray-600">
-            <Button
-              disabled={editTeam.isLoading || createTeam.isLoading}
-              onClick={save}
-            >
-              {editTeam.isLoading || createTeam.isLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Save"
-              )}
-            </Button>
-            <Button
-              disabled={editTeam.isLoading || createTeam.isLoading}
-              onClick={closeModal}
-            >
-              Close
-            </Button>
-          </div>
-        </div>
-      </div>
+            </div>
+          </form>
+          <DialogFooter>
+            <DialogClose>
+              <Button
+                variant={"outline"}
+                disabled={editTeam.isLoading || createTeam.isLoading}
+                onClick={save}
+              >
+                {editTeam.isLoading || createTeam.isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

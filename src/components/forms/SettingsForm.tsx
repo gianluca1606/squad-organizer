@@ -4,7 +4,7 @@ import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { api } from "~/utils/api";
 
-import { useOnClickOutside } from "usehooks-ts";
+import { useLocalStorage, useOnClickOutside } from "usehooks-ts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,8 +17,20 @@ import {
   AlertDialogTrigger,
 } from "components/ui/alert-dialog";
 import { Button } from "components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import { Label } from "~/components/ui/label";
 
 const AccountSettingsForm: FC = () => {
+  const teams = api.team.getTeamsForLoggedInUser.useQuery();
+  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
   const deleteUser = api.user.delete.useMutation();
   const [cookies, setCookie, removeCookie] = useCookies(["locale"]);
   const [localeCookie, setLocaleCookie] = useState("");
@@ -35,9 +47,9 @@ const AccountSettingsForm: FC = () => {
     }
   }, []);
 
-  const handleChange = (event: ChangeEvent<HTMLSelectElement>): void => {
-    setLocaleCookie(event.target.value);
-    setCookie("locale", event.target.value, { path: "/" });
+  const handleChange = (value: string): void => {
+    setLocaleCookie(value);
+    setCookie("locale", value, { path: "/" });
 
     router.reload();
   };
@@ -48,27 +60,68 @@ const AccountSettingsForm: FC = () => {
     router.push("/");
   };
 
+  const setActualTeam = (id: string) => {
+    setActualTeamFunction(id);
+  };
+
+  const handleSelectTeamChange = (value: string): void => {
+    setActualTeam(value);
+  };
+
+  const getTeamNameForId = (id: string) => {
+    return teams.data?.find((team) => team.id === id)?.name || "Select Team";
+  };
+
   return (
     <>
       <form className="w-full sm:w-1/2">
         <div className="mb-6">
           <div>
-            <label
-              htmlFor="countries"
+            <Label
+              htmlFor="language"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+            >
+              {"Select your default team"}
+            </Label>
+
+            <Select
+              disabled={teams.data?.length === 0}
+              value={actualTeam}
+              onValueChange={handleChange}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select your preffered language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {teams.data?.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {" "}
+                      {getTeamNameForId(team.id)}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Label
+              htmlFor="language"
               className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >
               {t("select")}
-            </label>
-            <select
-              id="countries"
-              value={localeCookie}
-              onChange={handleChange}
-              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            >
-              <option>Choose a language</option>
-              <option value="de"> {t("german")}</option>
-              <option value="en">{t("english")}</option>
-            </select>
+            </Label>
+
+            <Select value={localeCookie} onValueChange={handleChange}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select your preffered language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="de"> {t("german")}</SelectItem>
+                  <SelectItem value="en">{t("english")}</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

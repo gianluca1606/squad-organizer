@@ -26,7 +26,7 @@ export const teamRouter = createTRPCRouter({
           name: input.name,
           description: input.description,
           location: input.location,
-          managers: {
+          manager: {
             create: {
               clerkId: ctx.auth.userId,
             },
@@ -90,7 +90,12 @@ export const teamRouter = createTRPCRouter({
 
   getTeamsForLoggedInUser: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.team.findMany({
-      where: { managers: { some: { clerkId: ctx.auth.userId } } },
+      where: {
+        OR: [
+          { manager: { some: { clerkId: ctx.auth.userId } } },
+          { teamMember: { some: { clerkId: ctx.auth.userId } } },
+        ],
+      },
     });
   }),
 
@@ -100,7 +105,7 @@ export const teamRouter = createTRPCRouter({
       let teamData;
       if (!input.teamId) {
         teamData = await ctx.prisma.team.findFirst({
-          where: { managers: { some: { clerkId: ctx.auth.userId } } },
+          where: { manager: { some: { clerkId: ctx.auth.userId } } },
         });
       } else {
         teamData = await ctx.prisma.team.findFirst({
@@ -112,9 +117,17 @@ export const teamRouter = createTRPCRouter({
         where: { teamId: teamData?.id, clerkId: ctx.auth.userId },
       });
 
+      const userRequestedToJoinTeam = await ctx.prisma.joinRequest.findFirst({
+        where: {
+          teamId: teamData?.id,
+          clerkId: ctx.auth.userId,
+        },
+      });
+
       return {
         ...teamData,
         isUserAlreadyInTeam: !!isUserAlreadyInTeam,
+        userRequestedToJoinTeam: !!userRequestedToJoinTeam,
       } as TeamDataWithAlreadyInTeam;
     }),
 
@@ -122,7 +135,7 @@ export const teamRouter = createTRPCRouter({
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       //check if user is member of team or manager of team
-      const isUserManager = await ctx.prisma.teamManagers.findFirst({
+      const isUserManager = await ctx.prisma.teamManager.findFirst({
         where: { teamId: input.teamId, clerkId: ctx.auth.userId },
       });
 
@@ -158,6 +171,7 @@ export const teamRouter = createTRPCRouter({
           emailAddresses: member.emailAddresses,
           profileImageUrl: member.profileImageUrl,
           primaryEmailAddressId: member.primaryEmailAddressId,
+          isManager: !!isUserManager,
         };
       });
 
@@ -166,7 +180,7 @@ export const teamRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ ctx }) => {
     // TODO should only be able to get all teams if you're an admin
     return ctx.prisma.team.findMany({
-      where: { managers: { some: { clerkId: ctx.auth.userId } } },
+      where: { manager: { some: { clerkId: ctx.auth.userId } } },
     });
   }),
 
@@ -174,12 +188,12 @@ export const teamRouter = createTRPCRouter({
     .input(z.object({ teamId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       //check if user is member of team or manager of team
-      const isUserManager = await ctx.prisma.teamManagers.findFirst({
+      const isUserManager = await ctx.prisma.teamManager.findFirst({
         where: { teamId: input.teamId, clerkId: ctx.auth.userId },
       });
 
       const punishments =
-        await ctx.prisma.punishmentOrContributionList.findMany({
+        await ctx.prisma.punishmentOrContributionType.findMany({
           where: { teamId: input.teamId },
         });
 

@@ -32,7 +32,22 @@ export const joinRequestRouter = createTRPCRouter({
         });
       }
 
-      const data = await ctx.prisma.joinRequests.create({
+      const isUserAlreadyRequestedToJoin =
+        await ctx.prisma.joinRequest.findFirst({
+          where: {
+            clerkId: ctx.auth.userId,
+            teamId: input.teamId,
+          },
+        });
+
+      if (isUserAlreadyRequestedToJoin) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You have already requested to join this team",
+        });
+      }
+
+      const data = await ctx.prisma.joinRequest.create({
         data: {
           teamId: input.teamId,
           clerkId: ctx.auth.userId,
@@ -48,7 +63,7 @@ export const joinRequestRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.joinRequests.delete({
+      return await ctx.prisma.joinRequest.delete({
         where: {
           id: input.joinRequestId,
         },
@@ -56,7 +71,7 @@ export const joinRequestRouter = createTRPCRouter({
     }),
 
   getAllForLoggedInUser: protectedProcedure.query(async ({ ctx, input }) => {
-    const list = await ctx.prisma.joinRequests.findMany({
+    const list = await ctx.prisma.joinRequest.findMany({
       where: {
         clerkId: ctx.auth.userId,
       },
@@ -68,7 +83,7 @@ export const joinRequestRouter = createTRPCRouter({
   getAllForTeam: protectedProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const isTeamManager = await ctx.prisma.teamManagers.findFirst({
+      const isTeamManager = await ctx.prisma.teamManager.findFirst({
         where: {
           clerkId: ctx.auth.userId,
           teamId: input.teamId,
@@ -82,7 +97,7 @@ export const joinRequestRouter = createTRPCRouter({
         });
       }
 
-      const list = await ctx.prisma.joinRequests.findMany({
+      const list = await ctx.prisma.joinRequest.findMany({
         where: {
           teamId: input.teamId,
         },
@@ -115,7 +130,7 @@ export const joinRequestRouter = createTRPCRouter({
   accept: protectedProcedure
     .input(z.object({ joinRequestId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const joinRequest = await ctx.prisma.joinRequests.findFirst({
+      const joinRequest = await ctx.prisma.joinRequest.findFirst({
         where: {
           id: input.joinRequestId,
         },
@@ -128,7 +143,7 @@ export const joinRequestRouter = createTRPCRouter({
         });
       }
 
-      const isTeamManager = await ctx.prisma.teamManagers.findFirst({
+      const isTeamManager = await ctx.prisma.teamManager.findFirst({
         where: {
           clerkId: ctx.auth.userId,
           teamId: joinRequest.teamId,
@@ -163,7 +178,7 @@ export const joinRequestRouter = createTRPCRouter({
         },
       });
 
-      await ctx.prisma.joinRequests.delete({
+      await ctx.prisma.joinRequest.delete({
         where: {
           id: input.joinRequestId,
         },

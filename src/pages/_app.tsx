@@ -1,13 +1,13 @@
-import App, { AppContext, AppProps, type AppType } from "next/app";
-import { api } from "~/utils/api";
 import { deDe, enUS } from "@clerk/localizations";
-import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { ThemeProvider } from "next-themes";
-import Layout from "~/components/Layout";
+import { dark } from "@clerk/themes";
 import { NextIntlProvider } from "next-intl";
-import { cookies } from "next/headers";
-import { GetServerSidePropsContext } from "next";
+import { ThemeProvider } from "next-themes";
+import { AppContext, AppProps, type AppType } from "next/app";
+import Layout from "~/components/Layout";
+import { Toaster } from "~/components/ui/toaster";
+import "~/styles/globals.css";
+import { api } from "~/utils/api";
 // adjust the pageProps to have a `messages` property
 // that is the result of `await serverSideTranslations(locale, ['common'])`
 function getCookieValue(
@@ -25,11 +25,15 @@ function getCookieValue(
   return undefined;
 }
 
-type AppOwnProps = { locale: typeof deDe | typeof enUS };
-
 const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
   return (
-    <ClerkProvider {...pageProps} localization={pageProps.locale}>
+    <ClerkProvider
+      {...pageProps}
+      localization={pageProps.locale}
+      appearance={{
+        baseTheme: pageProps.theme,
+      }}
+    >
       <NextIntlProvider messages={pageProps.messages}>
         <ThemeProvider attribute="class">
           <div id="modals" />
@@ -38,12 +42,12 @@ const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
           </Layout>
         </ThemeProvider>
       </NextIntlProvider>
+      <Toaster />
     </ClerkProvider>
   );
 };
 
 MyApp.getInitialProps = async (context: AppContext) => {
-  const ctx = await App.getInitialProps(context);
   let localeCookie = getCookieValue("locale", context);
   let locale;
   if (localeCookie === "de") {
@@ -51,9 +55,18 @@ MyApp.getInitialProps = async (context: AppContext) => {
   } else {
     locale = enUS;
   }
+
+  let themeCookie = getCookieValue("theme", context);
+  let theme;
+  if (themeCookie === "light") {
+    theme = null;
+  } else {
+    theme = dark;
+  }
   return {
     pageProps: {
       locale: locale,
+      theme: theme,
       messages: [],
     },
   };

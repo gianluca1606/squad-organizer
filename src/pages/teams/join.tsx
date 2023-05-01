@@ -1,19 +1,45 @@
 import { Button } from "components/ui/button";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, Terminal } from "lucide-react";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Badge } from "~/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { useToast } from "~/components/ui/use-toast";
 
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
+  const { toast } = useToast();
   const router = useRouter();
   const teamData = api.team.getTeamData.useQuery({
     teamId: router.query.teamId as string,
   });
 
-  const joinTeam = api.joinRequest.create.useMutation();
+  const joinTeam = api.joinRequest.create.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Request sent",
+        description: "Your request has been sent to the team owner",
+      });
+      router.push("/dashboard");
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Some error occured, try later again",
+        variant: "destructive",
+      });
+    },
+  });
 
   const joinTeamMutation = () => {
     joinTeam.mutate({ teamId: router.query.teamId as string });
@@ -26,34 +52,54 @@ const Home: NextPage = () => {
         <meta name="description" content="Squad Organizer" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="relative mt-4 block w-full rounded-lg border border-gray-200 bg-white p-6 shadow dark:border-gray-700 dark:bg-gray-800 sm:w-10/12 md:w-8/12 2xl:w-6/12">
-        {teamData.isFetched && !teamData.data?.isUserAlreadyInTeam && (
-          <Button
-            className="absolute right-0 top-0"
-            onClick={joinTeamMutation}
-            disabled={joinTeam.isLoading}
-          >
-            {joinTeam.isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              " Click here to join team"
+
+      <div className="h-full w-full">
+        <Card className="relative mt-4 block w-full p-6  sm:w-10/12 md:w-full lg:w-8/12 2xl:w-6/12">
+          <CardHeader>
+            <CardTitle> {teamData.data?.name} </CardTitle>
+            <CardDescription>{teamData.data?.description}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Badge>{teamData.data?.location}</Badge>
+            {teamData.isFetched &&
+              !teamData.data?.isUserAlreadyInTeam &&
+              !teamData.data?.userRequestedToJoinTeam && (
+                <Button
+                  variant={"secondary"}
+                  className="absolute right-0 top-0"
+                  onClick={joinTeamMutation}
+                  disabled={joinTeam.isLoading}
+                >
+                  {joinTeam.isLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    " Click here to join team"
+                  )}
+                </Button>
+              )}
+
+            {teamData.isFetched && teamData.data?.isUserAlreadyInTeam && (
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Heads up!</AlertTitle>
+                <AlertDescription>
+                  You are already in this squad
+                </AlertDescription>
+              </Alert>
             )}
-          </Button>
-        )}
 
-        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          {teamData.data?.name}
-        </h5>
-        <address className="font-normal text-gray-700 dark:text-gray-400">
-          {teamData.data?.location}
-        </address>
-        <p className="font-normal text-gray-700 dark:text-gray-400">
-          {teamData.data?.description}
-        </p>
-
-        <p className="font-normal text-gray-700 dark:text-gray-400">
-          Share this link with your team members:
-        </p>
+            {teamData.isFetched && teamData.data?.userRequestedToJoinTeam && (
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Heads up!</AlertTitle>
+                <AlertDescription>
+                  You are already requested to join the squad, check with the
+                  squad manager to get into the squad
+                </AlertDescription>
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </>
   );

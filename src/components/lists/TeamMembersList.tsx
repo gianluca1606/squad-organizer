@@ -4,6 +4,13 @@ import { PublicUser } from "~/interfaces/PublicUser";
 import { api } from "~/utils/api";
 import { SkeletonList } from "./SkeletonList";
 import { getNameOrMail } from "~/utils/getNameOrMail";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Badge } from "~/components/ui/badge";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "~/components/ui/hover-card";
 
 const TeamMembersList: FC = () => {
   const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
@@ -100,15 +107,31 @@ const TeamMembersList: FC = () => {
               <li className="py-3 sm:py-4" key={member.id}>
                 <div className="flex items-center justify-between">
                   <div className="flex min-w-0 items-center">
-                    <img
-                      className="h-10 w-10 flex-shrink-0"
-                      src={member.profileImageUrl}
-                      alt="imac image"
-                    />
+                    <Avatar>
+                      <AvatarImage src={member.profileImageUrl} alt="@shadcn" />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+
                     <div className="ml-3">
                       <p className="truncate font-medium text-gray-900 dark:text-white">
-                        {getNameOrMail(member)}
+                        <HoverCard>
+                          <HoverCardTrigger>
+                            {" "}
+                            {getNameOrMail(member)}
+                          </HoverCardTrigger>
+                          <HoverCardContent>
+                            {member.birthday +
+                              "Member joined at" +
+                              member.updatedAt}
+                          </HoverCardContent>
+                        </HoverCard>
                       </p>
+                      {member.isManager && (
+                        <Badge variant="secondary">Manager</Badge>
+                      )}
+                      {!member.isManager && (
+                        <Badge variant="secondary">Member</Badge>
+                      )}
                     </div>
                   </div>
                   <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">

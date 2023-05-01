@@ -17,12 +17,12 @@ model Team {
     name                         String
     description                  String?
     location                     String?
-    managers                     TeamManagers[]
-    joinRequests                 JoinRequests[]
+    manager                      TeamManager[]
+    joinRequest                  JoinRequest[]
     punishmentAndContribution    PunishmentAndContribution[]
     teamBalance                  TeamBalance[]
     teamMember                   TeamMember[]
-    PunishmentOrContributionList PunishmentOrContributionList[]
+    punishmentOrContributionType PunishmentOrContributionType[]
 }
 
 model TeamMember {
@@ -33,7 +33,7 @@ model TeamMember {
     team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
-model TeamManagers {
+model TeamManager {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -42,7 +42,7 @@ model TeamManagers {
     clerkId   String
 }
 
-model JoinRequests {
+model JoinRequest {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -73,7 +73,7 @@ model Sponsor {
     price       Float?
 }
 
-model PunishmentOrContributionList {
+model PunishmentOrContributionType {
     id          String @id @default(cuid())
     name        String
     description String

@@ -7,6 +7,13 @@ import {
 } from "next";
 import Head from "next/head";
 import SettingsForm from "~/components/forms/SettingsForm";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "~/components/ui/card";
 import cookieUtil from "~/utils/cookies-util";
 
 export type NextPageWithAuth<P = {}, IP = P> = NextPage<P, IP> & {
@@ -22,13 +29,16 @@ const Settings: NextPageWithAuth = () => {
         <meta name="description" content="Squad Organizer" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="relative mt-4 block w-full rounded-lg border border-gray-200 bg-white p-6 shadow dark:border-gray-700 dark:bg-gray-800 sm:w-10/12 md:w-8/12 2xl:w-6/12">
-        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          Settings
-        </h5>
 
-        <SettingsForm />
-      </div>
+      <Card className="relative mt-4 block w-full  p-6  sm:w-10/12 md:w-8/12 2xl:w-6/12">
+        <CardHeader>
+          <CardTitle> Settings</CardTitle>
+          <CardDescription>Card Description</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SettingsForm />
+        </CardContent>
+      </Card>
     </>
   );
 };
