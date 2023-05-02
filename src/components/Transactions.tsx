@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useLocalStorage } from "usehooks-ts";
 import {
   Card,
   CardContent,
@@ -6,19 +7,31 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { useToast } from "~/components/ui/use-toast";
+import { CreateOrEditTeamBalanceEntry } from "./forms/CreateOrEditTeamBalanceEntry";
 
 const Transactions: FC = () => {
+  const { toast } = useToast();
+  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
   return (
     <div className="flex justify-center ">
       <Card className="relative mt-4 block w-full  p-6  sm:w-10/12 md:w-full lg:w-8/12 2xl:w-6/12">
         <CardHeader>
-          <CardTitle> Transactions</CardTitle>
+          <CardTitle> Team Balance</CardTitle>
           <CardDescription>
             Here you can see all punishments and contributions types of your
             squad
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="absolute  right-0 top-0 ">
+            {actualTeam && (
+              <CreateOrEditTeamBalanceEntry
+                edit={false}
+                data={null}
+              ></CreateOrEditTeamBalanceEntry>
+            )}
+          </div>
           <div className="mt-6 flex flex-col">
             <div className="overflow-x-auto rounded-lg">
               <div className="inline-block min-w-full align-middle">

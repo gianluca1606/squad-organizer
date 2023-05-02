@@ -1,8 +1,8 @@
 import { createTRPCRouter } from "~/server/api/trpc";
-import { punishmentAndContributionRouter } from "./routers/punishmentsAndContribution";
 import { teamRouter } from "./routers/team";
 import { userRouter } from "./routers/user";
 import { joinRequestRouter } from "./routers/joinRequest";
+import { punishmentOrContributionTypeRouter } from "./routers/punishmentsAndContributionType";
 
 /**
  * This is the primary router for your server.
@@ -11,7 +11,7 @@ import { joinRequestRouter } from "./routers/joinRequest";
  */
 export const appRouter = createTRPCRouter({
   user: userRouter,
-  punishmentAndContribution: punishmentAndContributionRouter,
+  punishmentOrContributionType: punishmentOrContributionTypeRouter,
   team: teamRouter,
   joinRequest: joinRequestRouter,
 });

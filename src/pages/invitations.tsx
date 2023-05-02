@@ -41,10 +41,11 @@ const Home: NextPage = () => {
   const declineJoinRequest = api.joinRequest.delete.useMutation({
     onSuccess: () => {
       toast({
-        title: "Join request declined",
+        title: "Join request removed",
         description: "The user has not been added to the team",
       });
       receivedJoinRequests.refetch();
+      sentJoinRequests.refetch();
     },
     onError: (error) => {
       toast({
@@ -58,6 +59,8 @@ const Home: NextPage = () => {
   const receivedJoinRequests = api.joinRequest.getAllForTeam.useQuery({
     teamId: actualTeam,
   });
+
+  const sentJoinRequests = api.joinRequest.getAllForLoggedInUser.useQuery();
 
   const accpetJoinRequestFunction = (joinRequestId: string | undefined) => {
     if (joinRequestId) {
@@ -92,29 +95,14 @@ const Home: NextPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Card Content</p>
-          </CardContent>
-        </Card>
-
-        <Card className="relative mt-4 block w-full p-6  sm:w-10/12 md:w-full lg:w-8/12 2xl:w-6/12">
-          <CardHeader>
-            <CardTitle> Received join requests</CardTitle>
-            <CardDescription>Card Description</CardDescription>
-          </CardHeader>
-          <CardContent>
             <ul>
-              {receivedJoinRequests.data?.map((joinRequest) => (
+              {sentJoinRequests.data?.map((joinRequest) => (
                 <li className="py-3 sm:py-4" key={joinRequest.id}>
                   <div className="flex items-center justify-between">
                     <div className="flex min-w-0 items-center">
-                      <img
-                        className="h-10 w-10 flex-shrink-0"
-                        src={joinRequest.profileImageUrl}
-                        alt="imac image"
-                      />
                       <div className="ml-3">
                         <p className="truncate font-medium text-gray-900 dark:text-white">
-                          {getNameOrMail(joinRequest)}
+                          {joinRequest.team.name}
                         </p>
                       </div>
                     </div>
@@ -123,16 +111,7 @@ const Home: NextPage = () => {
                         variant={"ghost"}
                         className="p-2.5"
                         onClick={() =>
-                          accpetJoinRequestFunction(joinRequest.joinRequestId)
-                        }
-                      >
-                        <Check className="h-5 w-5" />
-                      </Button>
-                      <Button
-                        variant={"ghost"}
-                        className="p-2.5"
-                        onClick={() =>
-                          declineJoinRequestFunction(joinRequest.joinRequestId)
+                          declineJoinRequestFunction(joinRequest.id)
                         }
                       >
                         <X className="h-5 w-5" />
@@ -144,6 +123,59 @@ const Home: NextPage = () => {
             </ul>
           </CardContent>
         </Card>
+
+        {actualTeam && (
+          <Card className="relative mt-4 block w-full p-6  sm:w-10/12 md:w-full lg:w-8/12 2xl:w-6/12">
+            <CardHeader>
+              <CardTitle> Received join requests</CardTitle>
+              <CardDescription>Card Description</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul>
+                {receivedJoinRequests.data?.map((joinRequest) => (
+                  <li className="py-3 sm:py-4" key={joinRequest.id}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex min-w-0 items-center">
+                        <img
+                          className="h-10 w-10 flex-shrink-0"
+                          src={joinRequest.profileImageUrl}
+                          alt="imac image"
+                        />
+                        <div className="ml-3">
+                          <p className="truncate font-medium text-gray-900 dark:text-white">
+                            {getNameOrMail(joinRequest)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                        <Button
+                          variant={"ghost"}
+                          className="p-2.5"
+                          onClick={() =>
+                            accpetJoinRequestFunction(joinRequest.joinRequestId)
+                          }
+                        >
+                          <Check className="h-5 w-5" />
+                        </Button>
+                        <Button
+                          variant={"ghost"}
+                          className="p-2.5"
+                          onClick={() =>
+                            declineJoinRequestFunction(
+                              joinRequest.joinRequestId
+                            )
+                          }
+                        >
+                          <X className="h-5 w-5" />
+                        </Button>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </>
   );

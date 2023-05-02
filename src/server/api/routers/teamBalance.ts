@@ -8,18 +8,19 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
-export const punishmentAndContributionRouter = createTRPCRouter({
+export const teamBalanceRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
         name: z.string(),
         description: z.string(),
         price: z.number(),
+        type: z.string(),
         teamId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const data = await ctx.prisma.punishmentOrContributionList.create({
+      const data = await ctx.prisma.punishmentOrContributionType.create({
         data: {
           name: input.name,
           description: input.description,
@@ -33,13 +34,35 @@ export const punishmentAndContributionRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(
       z.object({
-        punishmentId: z.string(),
+        punishmentOrContributionId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.punishmentOrContributionList.delete({
+      return await ctx.prisma.punishmentOrContributionType.delete({
         where: {
-          id: input.punishmentId,
+          id: input.punishmentOrContributionId,
+        },
+      });
+    }),
+
+  update: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        description: z.string().optional(),
+        price: z.number().optional(),
+        punishmentOrContributionId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.punishmentOrContributionType.update({
+        data: {
+          name: input.name,
+          description: input.description,
+          price: input.price,
+        },
+        where: {
+          id: input.punishmentOrContributionId,
         },
       });
     }),
@@ -51,12 +74,12 @@ export const punishmentAndContributionRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const list = await ctx.prisma.punishmentOrContributionList.findMany({
+      const list = await ctx.prisma.punishmentOrContributionType.findMany({
         where: {
           teamId: input.teamId,
         },
       });
-      const isUserManager = await ctx.prisma.teamManagers.findFirst({
+      const isUserManager = await ctx.prisma.teamManager.findFirst({
         where: { teamId: input.teamId, clerkId: ctx.auth.userId },
       });
 

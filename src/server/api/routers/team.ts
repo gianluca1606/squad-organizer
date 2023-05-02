@@ -78,8 +78,25 @@ export const teamRouter = createTRPCRouter({
     }),
 
   removeUserFromTeam: protectedProcedure
-    .input(z.object({ clerkId: z.string() }))
+    .input(z.object({ clerkId: z.string(), teamId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const isUserManager = await ctx.prisma.team.findFirst({
+        where: {
+          id: input.teamId,
+          manager: {
+            some: {
+              clerkId: ctx.auth.userId,
+            },
+          },
+        },
+      });
+
+      if (!isUserManager) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not the manager of this team",
+        });
+      }
       const user = await ctx.prisma.teamMember.delete({
         where: {
           id: input.clerkId,
@@ -104,9 +121,7 @@ export const teamRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       let teamData;
       if (!input.teamId) {
-        teamData = await ctx.prisma.team.findFirst({
-          where: { manager: { some: { clerkId: ctx.auth.userId } } },
-        });
+        return null;
       } else {
         teamData = await ctx.prisma.team.findFirst({
           where: { id: input.teamId },
@@ -171,7 +186,7 @@ export const teamRouter = createTRPCRouter({
           emailAddresses: member.emailAddresses,
           profileImageUrl: member.profileImageUrl,
           primaryEmailAddressId: member.primaryEmailAddressId,
-          isManager: !!isUserManager,
+          isManager: isUserManager?.clerkId === member.id,
         };
       });
 
@@ -192,13 +207,13 @@ export const teamRouter = createTRPCRouter({
         where: { teamId: input.teamId, clerkId: ctx.auth.userId },
       });
 
-      const punishments =
+      const punishmentsOrContributions =
         await ctx.prisma.punishmentOrContributionType.findMany({
           where: { teamId: input.teamId },
         });
 
       return {
-        punishments,
+        punishmentsOrContributions,
         isUserManager: isUserManager ? true : false,
       };
     }),

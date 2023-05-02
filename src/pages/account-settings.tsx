@@ -29,8 +29,7 @@ const Settings: NextPageWithAuth = () => {
         <meta name="description" content="Squad Organizer" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <Card className="relative mt-4 block w-full  p-6  sm:w-10/12 md:w-8/12 2xl:w-6/12">
+      <Card className="relative mt-4 block w-full p-6  sm:w-10/12 md:w-full lg:w-8/12 2xl:w-6/12">
         <CardHeader>
           <CardTitle> Settings</CardTitle>
           <CardDescription>Card Description</CardDescription>

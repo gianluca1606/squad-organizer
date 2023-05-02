@@ -53,7 +53,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="h-full w-full">
+      <div className="flex h-full w-full justify-center">
         <Card className="relative mt-4 block w-full p-6  sm:w-10/12 md:w-full lg:w-8/12 2xl:w-6/12">
           <CardHeader>
             <CardTitle> {teamData.data?.name} </CardTitle>

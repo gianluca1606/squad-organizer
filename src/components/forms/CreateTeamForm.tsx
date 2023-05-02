@@ -16,14 +16,44 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
+import { useToast } from "~/components/ui/use-toast";
 import { CreateEditTeamProps } from "~/interfaces/CreateEditTeamProps";
 import { RouterInputs, api } from "~/utils/api";
 
 type CreateTeamInput = RouterInputs["team"]["create"];
 
 const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
-  const createTeam = api.team.create.useMutation();
-  const editTeam = api.team.update.useMutation();
+  const { toast } = useToast();
+  const createTeam = api.team.create.useMutation({
+    onSuccess: (data) => {
+      toast({
+        title: "Team created",
+      });
+      setActualTeamFunction(data.id);
+      getTeamById.refetch();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Something went wrong, please try again later.",
+      });
+    },
+  });
+  const editTeam = api.team.update.useMutation({
+    onSuccess: (data) => {
+      toast({
+        title: "Team updated",
+      });
+      setActualTeamFunction(data.id);
+      getTeamById.refetch();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Something went wrong, please try again later.",
+      });
+    },
+  });
   const getTeamById = api.team.getTeamData.useQuery({ teamId: data?.id });
   const loadTeams = api.team.getTeamsForLoggedInUser.useQuery();
   const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
@@ -40,18 +70,9 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
 
   const onSubmit = (formData: CreateTeamInput) => {
     if (edit) {
-      editTeam.mutateAsync({ ...formData, teamId: data!.id }).then((result) => {
-        getTeamById.refetch();
-        setActualTeamFunction(result.id);
-        loadTeams.refetch();
-        //closeModal();
-      });
+      editTeam.mutate({ ...formData, teamId: data!.id });
     } else {
-      createTeam.mutateAsync(formData).then((result) => {
-        setActualTeamFunction(result.id);
-        loadTeams.refetch();
-        //closeModal();
-      });
+      createTeam.mutate(formData);
     }
   };
 
@@ -78,7 +99,7 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
             <DialogTitle> {edit ? "Edit team" : "Create team"}</DialogTitle>
             <DialogDescription>Create a team and organize it</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="w-full sm:w-1/2">
+          <form onSubmit={handleSubmit(onSubmit)} className="w-full">
             <div className="mb-6">
               <Label htmlFor="teamname">Team Name</Label>
               <Input

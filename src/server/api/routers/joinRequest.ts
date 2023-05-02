@@ -75,6 +75,9 @@ export const joinRequestRouter = createTRPCRouter({
       where: {
         clerkId: ctx.auth.userId,
       },
+      include: {
+        team: true,
+      },
     });
 
     return list;

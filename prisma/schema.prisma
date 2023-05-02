@@ -19,7 +19,6 @@ model Team {
     location                     String?
     manager                      TeamManager[]
     joinRequest                  JoinRequest[]
-    punishmentAndContribution    PunishmentAndContribution[]
     teamBalance                  TeamBalance[]
     teamMember                   TeamMember[]
     punishmentOrContributionType PunishmentOrContributionType[]
@@ -51,28 +50,6 @@ model JoinRequest {
     clerkId   String
 }
 
-model PunishmentAndContribution {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    dueDate   DateTime
-    name      String
-    type      String
-    team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-    teamId    String
-    clerkId   String
-    payed     Boolean  @default(false)
-}
-
-model Sponsor {
-    id          String   @id @default(cuid())
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    name        String
-    description String
-    price       Float?
-}
-
 model PunishmentOrContributionType {
     id          String @id @default(cuid())
     name        String
@@ -83,13 +60,15 @@ model PunishmentOrContributionType {
 }
 
 model TeamBalance {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    name      String
-    type      String
-    team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-    teamId    String
-    clerkId   String
-    payed     Boolean  @default(false)
+    id          String   @id @default(cuid())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    name        String
+    description String
+    type        String
+    price       Float?
+    team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId      String
+    clerkId     String
+    payed       Boolean  @default(false)
 }
