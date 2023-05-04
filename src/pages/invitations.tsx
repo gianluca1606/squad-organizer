@@ -1,10 +1,12 @@
+"use client";
 import { Button } from "components/ui/button";
 import { Check, X } from "lucide-react";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
+import { SelectTeamComponent } from "~/components/SelectTeamComponent";
 import {
   Card,
   CardContent,
@@ -17,10 +19,16 @@ import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/utils/api";
 import { getNameOrMail } from "~/utils/getNameOrMail";
 
-const Home: NextPage = () => {
-  const router = useRouter();
+const Invitations: NextPage = () => {
   const { toast } = useToast();
   const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
+  const [actualTeamState, setActualTeamState] = useState<string>("");
+
+  useEffect(() => {
+    if (actualTeam) {
+      setActualTeamState(actualTeam);
+    }
+  }, [actualTeam]);
   const acceptJoinRequest = api.joinRequest.accept.useMutation({
     onSuccess: () => {
       toast({
@@ -87,7 +95,10 @@ const Home: NextPage = () => {
       </Head>
 
       <div className="flex h-full w-full flex-col items-center justify-center">
-        <Card className="relative mt-4 block w-full p-6  sm:w-10/12 md:w-full lg:w-8/12 2xl:w-6/12">
+        <div className="flex w-full justify-center ">
+          <SelectTeamComponent />
+        </div>
+        <Card className="relative mt-4 block w-full p-6  sm:w-full lg:w-8/12 2xl:w-6/12">
           <CardHeader>
             <CardTitle> Sent join requests</CardTitle>
             <CardDescription>
@@ -124,8 +135,8 @@ const Home: NextPage = () => {
           </CardContent>
         </Card>
 
-        {actualTeam && (
-          <Card className="relative mt-4 block w-full p-6  sm:w-10/12 md:w-full lg:w-8/12 2xl:w-6/12">
+        {actualTeamState && (
+          <Card className="relative mt-4 block w-full p-6  sm:w-full lg:w-8/12 2xl:w-6/12">
             <CardHeader>
               <CardTitle> Received join requests</CardTitle>
               <CardDescription>Card Description</CardDescription>
@@ -181,4 +192,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Invitations;

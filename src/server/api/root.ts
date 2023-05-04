@@ -3,6 +3,7 @@ import { teamRouter } from "./routers/team";
 import { userRouter } from "./routers/user";
 import { joinRequestRouter } from "./routers/joinRequest";
 import { punishmentOrContributionTypeRouter } from "./routers/punishmentsAndContributionType";
+import { teamBalanceRouter } from "./routers/teamBalance";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   punishmentOrContributionType: punishmentOrContributionTypeRouter,
   team: teamRouter,
   joinRequest: joinRequestRouter,
+  teamBalance: teamBalanceRouter,
 });
 
 // export type definition of API

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import {
   Card,
@@ -13,9 +13,16 @@ import { CreateOrEditTeamBalanceEntry } from "./forms/CreateOrEditTeamBalanceEnt
 const Transactions: FC = () => {
   const { toast } = useToast();
   const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
+  const [actualTeamState, setActualTeamState] = useState<string>("");
+
+  useEffect(() => {
+    if (actualTeam) {
+      setActualTeamState(actualTeam);
+    }
+  }, [actualTeam]);
   return (
     <div className="flex justify-center ">
-      <Card className="relative mt-4 block w-full  p-6  sm:w-10/12 md:w-full lg:w-8/12 2xl:w-6/12">
+      <Card className="relative mt-4 block w-full  p-6  sm:w-full lg:w-8/12 2xl:w-6/12">
         <CardHeader>
           <CardTitle> Team Balance</CardTitle>
           <CardDescription>
@@ -25,11 +32,8 @@ const Transactions: FC = () => {
         </CardHeader>
         <CardContent>
           <div className="absolute  right-0 top-0 ">
-            {actualTeam && (
-              <CreateOrEditTeamBalanceEntry
-                edit={false}
-                data={null}
-              ></CreateOrEditTeamBalanceEntry>
+            {actualTeamState && (
+              <CreateOrEditTeamBalanceEntry edit={false} data={null} />
             )}
           </div>
           <div className="mt-6 flex flex-col">
@@ -223,7 +227,7 @@ const Transactions: FC = () => {
                       </tr>
                       <tr className="bg-gray-50 dark:bg-gray-700">
                         <td className="whitespace-nowrap p-4 text-sm font-normal text-gray-900 dark:text-white">
-                          Payment from{" "}
+                          Payment from
                           <span className="font-semibold">Lana Byrd</span>
                         </td>
                         <td className="whitespace-nowrap p-4 text-sm font-normal text-gray-500 dark:text-gray-400">

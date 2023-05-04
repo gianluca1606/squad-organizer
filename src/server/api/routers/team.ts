@@ -10,6 +10,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { AuthUtil } from "~/utils/auth-utils";
 
 export const teamRouter = createTRPCRouter({
   create: protectedProcedure
@@ -128,9 +129,11 @@ export const teamRouter = createTRPCRouter({
         });
       }
 
-      const isUserAlreadyInTeam = await ctx.prisma.teamMember.findFirst({
-        where: { teamId: teamData?.id, clerkId: ctx.auth.userId },
-      });
+      const isUserAlreadyInTeam = await AuthUtil.isUserTeamMember(
+        ctx.prisma,
+        teamData?.id,
+        ctx.auth.userId
+      );
 
       const userRequestedToJoinTeam = await ctx.prisma.joinRequest.findFirst({
         where: {
@@ -150,13 +153,17 @@ export const teamRouter = createTRPCRouter({
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       //check if user is member of team or manager of team
-      const isUserManager = await ctx.prisma.teamManager.findFirst({
-        where: { teamId: input.teamId, clerkId: ctx.auth.userId },
-      });
+      const isUserManager = await AuthUtil.isUserManager(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
 
-      const isUserMember = await ctx.prisma.teamMember.findFirst({
-        where: { teamId: input.teamId, clerkId: ctx.auth.userId },
-      });
+      const isUserMember = await AuthUtil.isUserTeamMember(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
 
       if (!isUserManager && !isUserMember) {
         throw new TRPCError({
@@ -203,9 +210,11 @@ export const teamRouter = createTRPCRouter({
     .input(z.object({ teamId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       //check if user is member of team or manager of team
-      const isUserManager = await ctx.prisma.teamManager.findFirst({
-        where: { teamId: input.teamId, clerkId: ctx.auth.userId },
-      });
+      const isUserManager = await AuthUtil.isUserManager(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
 
       const punishmentsOrContributions =
         await ctx.prisma.punishmentOrContributionType.findMany({

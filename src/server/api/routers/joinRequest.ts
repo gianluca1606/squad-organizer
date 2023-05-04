@@ -9,6 +9,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { AuthUtil } from "~/utils/auth-utils";
 
 export const joinRequestRouter = createTRPCRouter({
   create: protectedProcedure
@@ -86,14 +87,13 @@ export const joinRequestRouter = createTRPCRouter({
   getAllForTeam: protectedProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const isTeamManager = await ctx.prisma.teamManager.findFirst({
-        where: {
-          clerkId: ctx.auth.userId,
-          teamId: input.teamId,
-        },
-      });
+      const isUserManager = await AuthUtil.isUserManager(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
 
-      if (!isTeamManager) {
+      if (!isUserManager) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not a manager of this team",
@@ -146,14 +146,13 @@ export const joinRequestRouter = createTRPCRouter({
         });
       }
 
-      const isTeamManager = await ctx.prisma.teamManager.findFirst({
-        where: {
-          clerkId: ctx.auth.userId,
-          teamId: joinRequest.teamId,
-        },
-      });
+      const isUserManager = await AuthUtil.isUserManager(
+        ctx.prisma,
+        joinRequest.teamId,
+        ctx.auth.userId
+      );
 
-      if (!isTeamManager) {
+      if (!isUserManager) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not a manager of this team",

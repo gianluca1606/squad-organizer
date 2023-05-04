@@ -48,6 +48,7 @@ export const DeleteContributionOrPunishmentType: FC<Props> = ({
   const deletePunishmentOrContributionTypeMutation = () => {
     deleteContributionOrPunishmentType.mutate({
       punishmentOrContributionId: punishmentOrContributionId,
+      teamId: actualTeam,
     });
   };
   return (

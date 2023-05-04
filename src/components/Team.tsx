@@ -39,7 +39,7 @@ export const Team = () => {
   };
   return (
     <div className=" flex w-full flex-col items-center">
-      <Card className="relative mt-4 block w-full  p-6  sm:w-10/12 md:w-full lg:w-8/12 2xl:w-6/12">
+      <Card className="relative mt-4 block w-full  p-6  sm:w-full lg:w-8/12 2xl:w-6/12">
         <CardHeader>
           {actualTeam ? (
             <>

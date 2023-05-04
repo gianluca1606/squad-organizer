@@ -7,6 +7,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { AuthUtil } from "~/utils/auth-utils";
 
 export const teamBalanceRouter = createTRPCRouter({
   create: protectedProcedure
@@ -14,18 +15,29 @@ export const teamBalanceRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         description: z.string(),
-        price: z.number(),
+        price: z.number().optional(),
+        balanceType: z.string(),
         type: z.string(),
         teamId: z.string(),
+        clerkId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const data = await ctx.prisma.punishmentOrContributionType.create({
+      const isUserManager = await AuthUtil.isUserManager(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+
+      if (!isUserManager) throw new TRPCError({ code: "FORBIDDEN" });
+      const data = await ctx.prisma.teamBalance.create({
         data: {
           name: input.name,
           description: input.description,
+          type: input.type,
           price: input.price,
           teamId: input.teamId,
+          clerkId: input.clerkId,
         },
       });
       return data;
@@ -34,17 +46,29 @@ export const teamBalanceRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(
       z.object({
-        punishmentOrContributionId: z.string(),
+        teamBalanceId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.punishmentOrContributionType.delete({
+      const dataToDelete = await ctx.prisma.teamBalance.findFirst({
         where: {
-          id: input.punishmentOrContributionId,
+          id: input.teamBalanceId,
+        },
+      });
+      const isUserManager = await AuthUtil.isUserManager(
+        ctx.prisma,
+        dataToDelete?.teamId,
+        ctx.auth.userId
+      );
+
+      if (!isUserManager) throw new TRPCError({ code: "FORBIDDEN" });
+      return await ctx.prisma.teamBalance.delete({
+        where: {
+          id: input.teamBalanceId,
         },
       });
     }),
-
+  // todo
   update: protectedProcedure
     .input(
       z.object({
@@ -74,7 +98,13 @@ export const teamBalanceRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const list = await ctx.prisma.punishmentOrContributionType.findMany({
+      const isUserMember = await AuthUtil.isUserTeamMember(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+      if (!isUserMember) throw new TRPCError({ code: "FORBIDDEN" });
+      const list = await ctx.prisma.teamBalance.findMany({
         where: {
           teamId: input.teamId,
         },

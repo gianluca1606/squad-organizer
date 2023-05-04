@@ -62,6 +62,7 @@ export const CreateOrEditPunishmentOrContributionDialog: FC<
       setValue("name", data!.name);
       setValue("description", data?.description ? data?.description : "");
       setValue("price", data?.price ? data?.price : 0);
+      setValue("teamId", data?.teamId ? data?.teamId : "");
     }
   }, [data]);
 
@@ -72,6 +73,7 @@ export const CreateOrEditPunishmentOrContributionDialog: FC<
         punishmentOrContributionId: data!.id,
       });
     } else {
+      if (!formData.price) formData.price = 0;
       createPunishmmentOrContributionType.mutate(formData);
     }
   };
@@ -121,13 +123,13 @@ export const CreateOrEditPunishmentOrContributionDialog: FC<
               id="price"
               placeholder="price"
               required
-              {...register("price", { required: true, valueAsNumber: true })}
+              {...register("price", { valueAsNumber: true })}
             />
           </div>
         </form>
 
         <DialogFooter>
-          <DialogClose>
+          <DialogClose asChild>
             <Button
               variant={"outline"}
               disabled={

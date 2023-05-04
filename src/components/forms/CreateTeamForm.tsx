@@ -23,6 +23,7 @@ import { RouterInputs, api } from "~/utils/api";
 type CreateTeamInput = RouterInputs["team"]["create"];
 
 const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
+  const teams = api.team.getTeamsForLoggedInUser.useQuery();
   const { toast } = useToast();
   const createTeam = api.team.create.useMutation({
     onSuccess: (data) => {
@@ -31,6 +32,7 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
       });
       setActualTeamFunction(data.id);
       getTeamById.refetch();
+      teams.refetch();
     },
     onError: (error) => {
       toast({
@@ -45,6 +47,7 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
         title: "Team updated",
       });
       setActualTeamFunction(data.id);
+      teams.refetch();
       getTeamById.refetch();
     },
     onError: (error) => {
@@ -136,7 +139,7 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
             </div>
           </form>
           <DialogFooter>
-            <DialogClose>
+            <DialogClose asChild>
               <Button
                 variant={"outline"}
                 disabled={editTeam.isLoading || createTeam.isLoading}
