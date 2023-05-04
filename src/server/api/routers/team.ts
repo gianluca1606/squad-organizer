@@ -129,6 +129,12 @@ export const teamRouter = createTRPCRouter({
         });
       }
 
+      const isUserManager = await AuthUtil.isUserManager(
+        ctx.prisma,
+        teamData?.id,
+        ctx.auth.userId
+      );
+
       const isUserAlreadyInTeam = await AuthUtil.isUserTeamMember(
         ctx.prisma,
         teamData?.id,
@@ -146,7 +152,8 @@ export const teamRouter = createTRPCRouter({
         ...teamData,
         isUserAlreadyInTeam: !!isUserAlreadyInTeam,
         userRequestedToJoinTeam: !!userRequestedToJoinTeam,
-      } as TeamDataWithAlreadyInTeam;
+        isUserManager: !!isUserManager,
+      };
     }),
 
   getMembers: protectedProcedure

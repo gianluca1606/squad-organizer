@@ -3,12 +3,13 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { useLocalStorage, useOnClickOutside } from "usehooks-ts";
-import Transactions from "~/components/Transactions";
+import Transactions from "~/components/tabs/Transactions";
 import CreateTeamForm from "~/components/forms/CreateTeamForm";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { Team } from "~/components/Team";
+import { Team } from "~/components/tabs/Team";
 import { SelectTeamComponent } from "~/components/SelectTeamComponent";
+import { Personal } from "~/components/tabs/Personal";
 
 const Dashboard: NextPage = () => {
   return (
@@ -25,9 +26,10 @@ const Dashboard: NextPage = () => {
         </div>
         <Tabs defaultValue="transactions">
           <div className="flex w-full justify-center">
-            <TabsList className="grid w-full grid-cols-2 sm:w-full lg:w-8/12 2xl:w-6/12">
+            <TabsList className="grid w-full grid-cols-3 sm:w-full xl:w-10/12 2xl:w-8/12">
               <TabsTrigger value="transactions">Transactions</TabsTrigger>
               <TabsTrigger value="team">team</TabsTrigger>
+              <TabsTrigger value="personal">personal</TabsTrigger>
             </TabsList>
           </div>
 
@@ -36,6 +38,10 @@ const Dashboard: NextPage = () => {
           </TabsContent>
           <TabsContent value="team">
             <Team></Team>
+          </TabsContent>
+
+          <TabsContent value="personal">
+            <Personal />
           </TabsContent>
         </Tabs>
       </div>

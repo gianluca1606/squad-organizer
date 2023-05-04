@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { useToast } from "~/components/ui/use-toast";
-import { CreateOrEditTeamBalanceEntry } from "./forms/CreateOrEditTeamBalanceEntry";
+import { CreateOrEditTeamBalanceEntry } from "../forms/CreateOrEditTeamBalanceEntry";
 
 const Transactions: FC = () => {
   const { toast } = useToast();
@@ -22,7 +22,7 @@ const Transactions: FC = () => {
   }, [actualTeam]);
   return (
     <div className="flex justify-center ">
-      <Card className="relative mt-4 block w-full  p-6  sm:w-full lg:w-8/12 2xl:w-6/12">
+      <Card className="relative mt-4 block w-full  p-0 sm:w-full md:p-6 xl:w-10/12 2xl:w-8/12">
         <CardHeader>
           <CardTitle> Team Balance</CardTitle>
           <CardDescription>

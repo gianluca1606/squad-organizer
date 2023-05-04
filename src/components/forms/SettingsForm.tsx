@@ -16,19 +16,8 @@ import {
 } from "components/ui/alert-dialog";
 import { Button } from "components/ui/button";
 import { useLocalStorage } from "usehooks-ts";
-import { Label } from "~/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
 
 const AccountSettingsForm: FC = () => {
-  const teams = api.team.getTeamsForLoggedInUser.useQuery();
-  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
   const deleteUser = api.user.delete.useMutation();
   //@ts-ignore
   const t: any = useTranslations("Settings");
@@ -40,49 +29,9 @@ const AccountSettingsForm: FC = () => {
     router.push("/");
   };
 
-  const setActualTeam = (id: string) => {
-    setActualTeamFunction(id);
-  };
-
-  const handleSelectTeamChange = (value: string): void => {
-    setActualTeam(value);
-  };
-
-  const getTeamNameForId = (id: string) => {
-    return teams.data?.find((team) => team.id === id)?.name || "Select Team";
-  };
-
   return (
     <>
-      <form className="w-full ">
-        <div>
-          <Label
-            htmlFor="language"
-            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-          >
-            {"Select your default team"}
-          </Label>
-
-          <Select
-            disabled={teams.data?.length === 0}
-            value={actualTeam}
-            onValueChange={handleSelectTeamChange}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select your preffered language" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {teams.data?.map((team) => (
-                  <SelectItem key={team.id} value={team.id}>
-                    {getTeamNameForId(team.id)}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-
+      <form className="absolute bottom-0 right-0 ">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="destructive" disabled={deleteUser.isLoading}>

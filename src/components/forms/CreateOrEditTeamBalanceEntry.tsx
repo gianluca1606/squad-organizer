@@ -29,7 +29,7 @@ import { getNameOrMail } from "~/utils/getNameOrMail";
 type CreateOrUpDateTeamBalanceEntry = RouterInputs["teamBalance"]["create"];
 type CreateEditBalanceProps = {
   edit: boolean;
-  data?: CreateOrUpDateTeamBalanceEntry;
+  data?: CreateOrUpDateTeamBalanceEntry | null;
 };
 export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
   edit,
@@ -64,7 +64,6 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
       {
         onSuccess: (data) => {
           if (!edit) {
-            console.log("test");
             setValue("name", data.punishmentsOrContributions[0]!.name);
           }
         },
@@ -92,8 +91,6 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
   });
 
   const save = () => {
-    console.log(getValues("type"));
-    // setValue("teamId", actualTeam);
     handleSubmit(onSubmit)();
   };
 
@@ -135,7 +132,6 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
   };
 
   const onSubmit = (formData: CreateOrUpDateTeamBalanceEntry) => {
-    console.log(formData);
     // if (edit) {
     //   editPunishmmentOrContributionType.mutate({
     //     ...formData,

@@ -69,6 +69,7 @@ model TeamBalance {
     price       Float?
     team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
     teamId      String
-    clerkId     String
+    clerkId     String?
+    sponsorName String?
     payed       Boolean  @default(false)
 }

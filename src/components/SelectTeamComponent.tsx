@@ -26,7 +26,7 @@ export const SelectTeamComponent = () => {
       value={actualTeam}
       onValueChange={handleSelectTeamChange}
     >
-      <SelectTrigger className="w-full  sm:w-full lg:w-8/12 2xl:w-6/12">
+      <SelectTrigger className="w-full  sm:w-full xl:w-10/12 2xl:w-8/12">
         <SelectValue placeholder="Select your preffered language" />
       </SelectTrigger>
       <SelectContent>

@@ -1,7 +1,9 @@
 import { Team } from "@prisma/client";
+import { RouterOutputs } from "~/utils/api";
 
+type GetTeamData = RouterOutputs["team"]["getTeamData"];
 export type CreateEditTeamProps = {
-  data: TeamDataWithAlreadyInTeam | null | undefined;
+  data: GetTeamData | null | undefined;
   edit: boolean;
 };
 

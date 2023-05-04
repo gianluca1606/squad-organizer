@@ -65,7 +65,7 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
 
   useEffect(() => {
     if (edit && data) {
-      setValue("name", data!.name);
+      setValue("name", data!.name!);
       setValue("description", data?.description ? data?.description : "");
       setValue("location", data?.location ? data?.location : "");
     }
@@ -73,7 +73,7 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
 
   const onSubmit = (formData: CreateTeamInput) => {
     if (edit) {
-      editTeam.mutate({ ...formData, teamId: data!.id });
+      editTeam.mutate({ ...formData, teamId: data!.id! });
     } else {
       createTeam.mutate(formData);
     }

@@ -15,7 +15,8 @@ import {
 import { Input } from "~/components/ui/input";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/utils/api";
-import { CreateOrEditPunishmentOrContributionDialog } from "./forms/CreateOrEditPunishmentDialog";
+import { CreateOrEditPunishmentOrContributionDialog } from "../forms/CreateOrEditPunishmentDialog";
+import { ReceivedJoinRequests } from "../ReceivedJoinRequests";
 
 export const Team = () => {
   const { toast } = useToast();
@@ -39,7 +40,7 @@ export const Team = () => {
   };
   return (
     <div className=" flex w-full flex-col items-center">
-      <Card className="relative mt-4 block w-full  p-6  sm:w-full lg:w-8/12 2xl:w-6/12">
+      <Card className="relative mt-4 block w-full p-0 sm:w-full  md:p-6 xl:w-10/12 2xl:w-8/12">
         <CardHeader>
           {actualTeam ? (
             <>
@@ -91,7 +92,7 @@ export const Team = () => {
       </Card>
 
       {actualTeam && (
-        <Card className="relative mt-4 block w-full  p-6  sm:w-10/12 md:w-full lg:w-8/12 2xl:w-6/12">
+        <Card className="relative mt-4 block w-full p-0 sm:w-full md:p-6 xl:w-10/12 2xl:w-8/12">
           <CardHeader>
             <CardTitle> Strafenkatalog / Mannschaftsbeitraege</CardTitle>
             <CardDescription>
@@ -110,6 +111,7 @@ export const Team = () => {
           </CardContent>
         </Card>
       )}
+      {teamData.data?.isUserManager && <ReceivedJoinRequests />}
     </div>
   );
 };
