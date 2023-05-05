@@ -36,7 +36,6 @@ const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
     >
       <NextIntlProvider messages={pageProps.messages}>
         <ThemeProvider attribute="class">
-          <div id="modals" />
           <Layout>
             <Component {...pageProps} />
           </Layout>

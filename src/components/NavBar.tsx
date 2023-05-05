@@ -75,6 +75,7 @@ export function NavBar() {
         <div className="mx-auto max-w-screen-xl flex-col flex-wrap items-center justify-between p-4 md:flex md:flex-row">
           <Link href="/" className="flex items-center">
             <Image
+              priority
               src={
                 currentTheme === "dark"
                   ? "/logo-no-background.png"

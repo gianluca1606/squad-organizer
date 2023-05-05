@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { Textarea } from "~/components/ui/textarea";
 import { useToast } from "~/components/ui/use-toast";
 import { RouterInputs, api } from "~/utils/api";
 import { getNameOrMail } from "~/utils/getNameOrMail";
@@ -43,44 +44,25 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
   const { register, handleSubmit, setValue, reset, getValues, watch } =
     useForm<CreateOrUpDateTeamBalanceEntry>();
 
-  const allMembers = api.team.getMembers.useQuery(
-    {
-      teamId: actualTeam,
-    },
-    {
-      onSuccess: (data) => {
-        if (!edit) {
-          setValue("clerkId", data[0]!.id);
-        }
-      },
-    }
-  );
+  const allMembers = api.team.getMembers.useQuery({
+    teamId: actualTeam,
+  });
 
   const punishmentsAndContributionList =
-    api.team.getAllContributionsAndPunishmentsForTeam.useQuery(
-      {
-        teamId: actualTeam,
-      },
-      {
-        onSuccess: (data) => {
-          if (!edit) {
-            setValue("name", data.punishmentsOrContributions[0]!.name);
-          }
-        },
-      }
-    );
-
-  const createBalanceEntry =
-    api.punishmentOrContributionType.create.useMutation({
-      onSuccess: (data) => {
-        toast({
-          title: "Balance Entry created",
-        });
-        reset();
-        punishmentsAndContributionList.refetch();
-      },
+    api.team.getAllContributionsAndPunishmentsForTeam.useQuery({
+      teamId: actualTeam,
     });
-  const editBalanceEntry = api.punishmentOrContributionType.update.useMutation({
+
+  const createBalanceEntry = api.teamBalance.create.useMutation({
+    onSuccess: (data) => {
+      toast({
+        title: "Balance Entry created",
+      });
+      reset();
+      punishmentsAndContributionList.refetch();
+    },
+  });
+  const editBalanceEntry = api.teamBalance.update.useMutation({
     onSuccess: (data) => {
       toast({
         title: "Balance Entry updated",
@@ -95,51 +77,59 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
   };
 
   useEffect(() => {
-    if (!edit) {
-      setValue("teamId", actualTeam);
-      setValue("type", "punishmentOrContribution");
-      setValue(
-        "name",
-        punishmentsAndContributionList.data?.punishmentsOrContributions[0]!
-          .name!
-      );
-    }
     if (edit && data) {
       setValue("name", data!.name);
       setValue("description", data?.description ? data?.description : "");
       setValue("price", data?.price ? data?.price : 0);
       setValue("teamId", data?.teamId ? data?.teamId : "");
+      setValue("sponsorName", data?.sponsorName ? data?.sponsorName : "");
+      setValue("description", data?.description ? data?.description : "");
+      setValue("entryType", data?.entryType ? data?.entryType : "");
     }
   }, [data]);
 
-  const getDefaultMember = () => {
+  useEffect(() => {
     if (!edit) {
-      return allMembers.data?.[0]!.id!;
-    } else {
-      return data?.clerkId;
+      setValue("teamId", actualTeam);
+      setValue("entryType", "punishmentOrContribution");
+      if (
+        punishmentsAndContributionList.data?.punishmentsOrContributions &&
+        punishmentsAndContributionList.data?.punishmentsOrContributions.length >
+          0
+      ) {
+        setValue(
+          "name",
+          punishmentsAndContributionList.data?.punishmentsOrContributions[0]!
+            .name!
+        );
+      }
+      if (allMembers.data) {
+        setValue("clerkId", allMembers.data![0]!.id);
+      }
     }
-  };
+  }, [actualTeam, punishmentsAndContributionList.data, allMembers.data]);
 
   const setMemberName = (memberId: string) => {
     setValue("clerkId", memberId);
   };
 
   const setEntryType = (entryType: string) => {
-    setValue("type", entryType);
+    setValue("entryType", entryType);
   };
   const setPunishmentOrContributionName = (name: string) => {
     setValue("name", name);
   };
 
   const onSubmit = (formData: CreateOrUpDateTeamBalanceEntry) => {
-    // if (edit) {
-    //   editPunishmmentOrContributionType.mutate({
-    //     ...formData,
-    //     punishmentOrContributionId: data!.id,
-    //   });
-    // } else {
-    //   createPunishmmentOrContributionType.mutate(formData);
-    // }
+    console.log(formData);
+    if (edit) {
+      createBalanceEntry.mutate({
+        ...formData,
+        id: data?.id,
+      });
+    } else {
+      createBalanceEntry.mutate(formData);
+    }
   };
   return (
     <Dialog>
@@ -159,7 +149,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
           <Label htmlFor="teamname">Entry type</Label>
           <Select
             required
-            value={getValues("type")}
+            value={getValues("entryType")}
             onValueChange={setEntryType}
           >
             <SelectTrigger>
@@ -170,9 +160,11 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
                 Punishment or Contribution
               </SelectItem>
               <SelectItem value="sponsor">Sponsor</SelectItem>
+              <SelectItem value="expenses">Ausgabe</SelectItem>
             </SelectContent>
           </Select>
-          {watch("type") === "punishmentOrContribution" && (
+          {(watch("entryType") === "punishmentOrContribution" ||
+            watch("entryType") === "expenses") && (
             <>
               <Label htmlFor="teamname">Member</Label>
               <Select
@@ -193,28 +185,62 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
             </>
           )}
 
-          <Label htmlFor="teamname">Punishment or Contribution Type</Label>
-          <Select
-            value={getValues("name")}
-            onValueChange={setPunishmentOrContributionName}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {punishmentsAndContributionList.data?.punishmentsOrContributions.map(
-                (punishmentOrContribution) => (
-                  <SelectItem
-                    value={punishmentOrContribution.name}
-                    key={punishmentOrContribution.id}
-                  >
-                    {punishmentOrContribution.name}
-                  </SelectItem>
-                )
-              )}
-            </SelectContent>
-          </Select>
+          {watch("entryType") === "sponsor" && (
+            <>
+              <Label htmlFor="sponsorname">Sponsorname</Label>
+              <Input
+                type="text"
+                id="sponsor"
+                placeholder="Sponsorname"
+                required
+                {...register("sponsorName", { required: true })}
+              />
+            </>
+          )}
 
+          {watch("entryType") === "punishmentOrContribution" && (
+            <>
+              <Label htmlFor="teamname">Punishment or Contribution Type</Label>
+              <Select
+                disabled={
+                  punishmentsAndContributionList.data
+                    ?.punishmentsOrContributions.length === 0
+                }
+                value={getValues("name")}
+                onValueChange={setPunishmentOrContributionName}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {punishmentsAndContributionList.data?.punishmentsOrContributions.map(
+                    (punishmentOrContribution) => (
+                      <SelectItem
+                        value={punishmentOrContribution.name}
+                        key={punishmentOrContribution.id}
+                      >
+                        {punishmentOrContribution.name}
+                      </SelectItem>
+                    )
+                  )}
+                </SelectContent>
+              </Select>
+            </>
+          )}
+          <div>
+            <label
+              htmlFor="message"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Your description
+            </label>
+            <Textarea
+              id="message"
+              placeholder="Write your thoughts here.."
+              {...register("description", { required: true })}
+              rows={4}
+            />
+          </div>
           <div className="mb-6">
             <Label htmlFor="teamname">Price</Label>
             <Input

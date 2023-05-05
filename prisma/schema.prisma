@@ -65,7 +65,7 @@ model TeamBalance {
     updatedAt   DateTime @updatedAt
     name        String
     description String
-    type        String
+    entryType   String
     price       Float?
     team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
     teamId      String

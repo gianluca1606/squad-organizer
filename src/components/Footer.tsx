@@ -1,11 +1,23 @@
 import Link from "next/link";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 interface Props {
   children?: ReactNode;
 }
 
 const Footer: FC = ({ children }: Props) => {
+  const { systemTheme, theme, setTheme } = useTheme();
+  const currentTheme = theme === "system" ? systemTheme : theme;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
   return (
     <>
       <footer className="light:bg-white m-4 rounded-lg shadow dark:bg-background">
@@ -16,7 +28,12 @@ const Footer: FC = ({ children }: Props) => {
               className="mb-4 flex items-center sm:mb-0"
             >
               <Image
-                src="/logo-no-background.png"
+                priority
+                src={
+                  currentTheme === "dark"
+                    ? "/logo-no-background.png"
+                    : "/logo-black.svg"
+                }
                 width={150}
                 height={150}
                 alt="Squad Organizer Logo"

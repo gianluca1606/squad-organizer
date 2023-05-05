@@ -450,7 +450,7 @@ const Home: NextPageWithAuth = () => {
       <section className="bg-white dark:bg-background">
         <div className="mx-auto max-w-screen-xl items-center gap-16 px-4 py-8 lg:grid lg:grid-cols-2 lg:px-6 lg:py-16">
           <div className="font-light text-gray-500 dark:text-gray-400 sm:text-lg">
-            <h2 className="mb-4 text-4xl font-extrabold text-white dark:text-gray-900">
+            <h2 className="mb-4 text-4xl font-extrabold text-black dark:text-white">
               We didn't reinvent the wheel
             </h2>
             <p className="mb-4">

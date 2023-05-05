@@ -1,4 +1,5 @@
 import { clerkClient } from "@clerk/nextjs/server";
+import { TeamBalance } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -13,11 +14,12 @@ export const teamBalanceRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
+        id: z.string().optional(),
         name: z.string(),
         description: z.string(),
+        sponsorName: z.string().optional(),
         price: z.number().optional(),
-        balanceType: z.string(),
-        type: z.string(),
+        entryType: z.string(),
         teamId: z.string(),
         clerkId: z.string(),
       })
@@ -30,17 +32,48 @@ export const teamBalanceRouter = createTRPCRouter({
       );
 
       if (!isUserManager) throw new TRPCError({ code: "FORBIDDEN" });
-      const data = await ctx.prisma.teamBalance.create({
-        data: {
-          name: input.name,
-          description: input.description,
-          type: input.type,
-          price: input.price,
-          teamId: input.teamId,
-          clerkId: input.clerkId,
-        },
-      });
-      return data;
+      let result: TeamBalance | null = null;
+      if (input.entryType === "sponsor") {
+        result = await ctx.prisma.teamBalance.create({
+          data: {
+            name: input.name,
+            description: input.description,
+            entryType: input.entryType,
+            price: input.price,
+            teamId: input.teamId,
+            sponsorName: input.sponsorName,
+            id: input.id,
+          },
+        });
+        return result;
+      }
+      if (input.entryType === "punishmentOrContribution") {
+        result = await ctx.prisma.teamBalance.create({
+          data: {
+            name: input.name,
+            description: input.description,
+            entryType: input.entryType,
+            price: input.price,
+            teamId: input.teamId,
+            clerkId: input.clerkId,
+            id: input.id,
+          },
+        });
+      }
+
+      if (input.entryType === "expenses") {
+        result = await ctx.prisma.teamBalance.create({
+          data: {
+            name: input.name,
+            description: input.description,
+            entryType: input.entryType,
+            price: input.price,
+            teamId: input.teamId,
+            clerkId: input.clerkId,
+            id: input.id,
+          },
+        });
+      }
     }),
 
   delete: protectedProcedure
@@ -68,7 +101,7 @@ export const teamBalanceRouter = createTRPCRouter({
         },
       });
     }),
-  // todo
+  // TODO
   update: protectedProcedure
     .input(
       z.object({
