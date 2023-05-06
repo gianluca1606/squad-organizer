@@ -1,9 +1,10 @@
+import { useLocalStorage } from "@mantine/hooks";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Edit, Loader2, Plus } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocalStorage } from "usehooks-ts";
 import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -24,34 +25,37 @@ import {
 } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
 import { useToast } from "~/components/ui/use-toast";
-import { RouterInputs, api } from "~/utils/api";
+import { RouterInputs, RouterOutputs, api } from "~/utils/api";
 import { getNameOrMail } from "~/utils/getNameOrMail";
 
 type CreateOrUpDateTeamBalanceEntry = RouterInputs["teamBalance"]["create"];
+type UpdateTeamBalanceEntry =
+  RouterOutputs["teamBalance"]["getAllForTeam"]["listWithClerks"]["0"];
 type CreateEditBalanceProps = {
   edit: boolean;
-  data?: CreateOrUpDateTeamBalanceEntry | null;
+  data?: CreateOrUpDateTeamBalanceEntry | UpdateTeamBalanceEntry | undefined;
+  allMembers: RouterOutputs["team"]["getMembers"] | undefined;
+  punishmentsAndContributionList:
+    | RouterOutputs["team"]["getAllContributionsAndPunishmentsForTeam"]
+    | undefined;
+  refetchBalanceEntries: () => void;
 };
 export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
   edit,
   data,
+  allMembers,
+  punishmentsAndContributionList,
+  refetchBalanceEntries,
 }) => {
   const { toast } = useToast();
-  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
-  const teamMembers = api.team.getMembers.useQuery({
-    teamId: actualTeam,
+
+  const [actualTeam, setActualTeamFunction] = useLocalStorage({
+    defaultValue: "",
+    key: "teamId",
   });
+  const [actualTeamState, setActualTeamState] = useState<string>("");
   const { register, handleSubmit, setValue, reset, getValues, watch } =
     useForm<CreateOrUpDateTeamBalanceEntry>();
-
-  const allMembers = api.team.getMembers.useQuery({
-    teamId: actualTeam,
-  });
-
-  const punishmentsAndContributionList =
-    api.team.getAllContributionsAndPunishmentsForTeam.useQuery({
-      teamId: actualTeam,
-    });
 
   const createBalanceEntry = api.teamBalance.create.useMutation({
     onSuccess: (data) => {
@@ -59,7 +63,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
         title: "Balance Entry created",
       });
       reset();
-      punishmentsAndContributionList.refetch();
+      refetchBalanceEntries();
     },
   });
   const editBalanceEntry = api.teamBalance.update.useMutation({
@@ -68,7 +72,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
         title: "Balance Entry updated",
       });
       reset();
-      punishmentsAndContributionList.refetch();
+      refetchBalanceEntries();
     },
   });
 
@@ -82,32 +86,38 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
       setValue("description", data?.description ? data?.description : "");
       setValue("price", data?.price ? data?.price : 0);
       setValue("teamId", data?.teamId ? data?.teamId : "");
+      setValue("clerkId", data?.clerkId ? data?.clerkId : "");
       setValue("sponsorName", data?.sponsorName ? data?.sponsorName : "");
       setValue("description", data?.description ? data?.description : "");
       setValue("entryType", data?.entryType ? data?.entryType : "");
+      setValue("payed", data?.payed ? "on" : "off");
     }
   }, [data]);
 
   useEffect(() => {
+    if (actualTeam) {
+      setActualTeamState(actualTeam);
+    }
+  }, [actualTeam]);
+
+  useEffect(() => {
     if (!edit) {
-      setValue("teamId", actualTeam);
+      setValue("teamId", actualTeamState);
       setValue("entryType", "punishmentOrContribution");
       if (
-        punishmentsAndContributionList.data?.punishmentsOrContributions &&
-        punishmentsAndContributionList.data?.punishmentsOrContributions.length >
-          0
+        punishmentsAndContributionList?.punishmentsOrContributions &&
+        punishmentsAndContributionList?.punishmentsOrContributions.length > 0
       ) {
         setValue(
           "name",
-          punishmentsAndContributionList.data?.punishmentsOrContributions[0]!
-            .name!
+          punishmentsAndContributionList?.punishmentsOrContributions[0]!.name!
         );
       }
-      if (allMembers.data) {
-        setValue("clerkId", allMembers.data![0]!.id);
+      if (allMembers && allMembers.length > 0) {
+        setValue("clerkId", allMembers[0]!.id);
       }
     }
-  }, [actualTeam, punishmentsAndContributionList.data, allMembers.data]);
+  }, [actualTeamState, punishmentsAndContributionList, allMembers]);
 
   const setMemberName = (memberId: string) => {
     setValue("clerkId", memberId);
@@ -121,12 +131,11 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
   };
 
   const onSubmit = (formData: CreateOrUpDateTeamBalanceEntry) => {
-    console.log(formData);
     if (edit) {
-      createBalanceEntry.mutate({
-        ...formData,
-        id: data?.id,
-      });
+      // editBalanceEntry.mutate({
+      //   ...formData,
+      //   id: data?.id,
+      // });
     } else {
       createBalanceEntry.mutate(formData);
     }
@@ -175,11 +184,12 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
                   <SelectValue placeholder="Select a member" />
                 </SelectTrigger>
                 <SelectContent>
-                  {allMembers.data?.map((member) => (
-                    <SelectItem value={member.id} key={member.id}>
-                      {getNameOrMail(member)}
-                    </SelectItem>
-                  ))}
+                  {allMembers &&
+                    allMembers.map((member) => (
+                      <SelectItem value={member.id} key={member.id}>
+                        {getNameOrMail(member)}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </>
@@ -203,8 +213,8 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
               <Label htmlFor="teamname">Punishment or Contribution Type</Label>
               <Select
                 disabled={
-                  punishmentsAndContributionList.data
-                    ?.punishmentsOrContributions.length === 0
+                  punishmentsAndContributionList?.punishmentsOrContributions
+                    .length === 0
                 }
                 value={getValues("name")}
                 onValueChange={setPunishmentOrContributionName}
@@ -213,7 +223,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {punishmentsAndContributionList.data?.punishmentsOrContributions.map(
+                  {punishmentsAndContributionList?.punishmentsOrContributions.map(
                     (punishmentOrContribution) => (
                       <SelectItem
                         value={punishmentOrContribution.name}
@@ -250,6 +260,13 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
               required
               {...register("price", { required: true, valueAsNumber: true })}
             />
+          </div>
+
+          <div className="mb-6">
+            <Label htmlFor="payed" className="mr-4">
+              Payed?
+            </Label>
+            <Checkbox className="border-white " {...register("payed")} />
           </div>
         </form>
 

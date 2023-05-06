@@ -1,4 +1,4 @@
-import { useLocalStorage } from "usehooks-ts";
+import { useLocalStorage } from "@mantine/hooks";
 import {
   Select,
   SelectContent,
@@ -10,9 +10,15 @@ import {
 import { api } from "~/utils/api";
 
 export const SelectTeamComponent = () => {
-  const teams = api.team.getTeamsForLoggedInUser.useQuery();
+  const teams = api.team.getTeamsForLoggedInUser.useQuery(undefined, {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 
-  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
+  const [actualTeam, setActualTeamFunction] = useLocalStorage({
+    defaultValue: "",
+    key: "teamId",
+  });
   const handleSelectTeamChange = (value: string): void => {
     setActualTeamFunction(value);
   };

@@ -2,6 +2,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { TeamBalance } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { PublicUser } from "~/interfaces/PublicUser";
 
 import {
   createTRPCRouter,
@@ -22,6 +23,13 @@ export const teamBalanceRouter = createTRPCRouter({
         entryType: z.string(),
         teamId: z.string(),
         clerkId: z.string(),
+        payed: z.string().transform((value) => {
+          console.log("logging payed value");
+          console.log(value);
+          if (value === "on") return true;
+          if (value === "off") return false;
+          return false;
+        }),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -36,12 +44,13 @@ export const teamBalanceRouter = createTRPCRouter({
       if (input.entryType === "sponsor") {
         result = await ctx.prisma.teamBalance.create({
           data: {
-            name: input.name,
+            name: "sponsor",
             description: input.description,
             entryType: input.entryType,
             price: input.price,
             teamId: input.teamId,
             sponsorName: input.sponsorName,
+            payed: input.payed,
             id: input.id,
           },
         });
@@ -56,6 +65,7 @@ export const teamBalanceRouter = createTRPCRouter({
             price: input.price,
             teamId: input.teamId,
             clerkId: input.clerkId,
+            payed: input.payed,
             id: input.id,
           },
         });
@@ -64,11 +74,12 @@ export const teamBalanceRouter = createTRPCRouter({
       if (input.entryType === "expenses") {
         result = await ctx.prisma.teamBalance.create({
           data: {
-            name: input.name,
+            name: "expenses",
             description: input.description,
             entryType: input.entryType,
             price: input.price,
             teamId: input.teamId,
+            payed: input.payed,
             clerkId: input.clerkId,
             id: input.id,
           },
@@ -142,12 +153,33 @@ export const teamBalanceRouter = createTRPCRouter({
           teamId: input.teamId,
         },
       });
+
+      const listWithClerks = await Promise.all(
+        list.map(async (item) => {
+          if (item.clerkId) {
+            // TODO clerk to much data is sent here
+            const clerk = await clerkClient.users.getUser(item.clerkId);
+            const publicUser: PublicUser = {
+              ...clerk,
+            };
+            return {
+              ...item,
+              publicUser,
+            };
+          }
+          return {
+            ...item,
+            publicUser: null,
+          };
+        })
+      );
+
       const isUserManager = await ctx.prisma.teamManager.findFirst({
         where: { teamId: input.teamId, clerkId: ctx.auth.userId },
       });
 
       return {
-        list,
+        listWithClerks,
         isUserManager: !!isUserManager,
       };
     }),

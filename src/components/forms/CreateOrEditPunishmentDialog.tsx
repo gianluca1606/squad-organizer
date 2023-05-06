@@ -28,9 +28,16 @@ export const CreateOrEditPunishmentOrContributionDialog: FC<
   const { toast } = useToast();
   const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
   const punishmentsAndContributionList =
-    api.team.getAllContributionsAndPunishmentsForTeam.useQuery({
-      teamId: actualTeam,
-    });
+    api.team.getAllContributionsAndPunishmentsForTeam.useQuery(
+      {
+        teamId: actualTeam,
+      },
+      {
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+      }
+    );
+
   const createPunishmmentOrContributionType =
     api.punishmentOrContributionType.create.useMutation({
       onSuccess: (data) => {

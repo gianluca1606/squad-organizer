@@ -24,9 +24,15 @@ export const DeleteContributionOrPunishmentType: FC<Props> = ({
 }) => {
   const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
   const punishmentsAndContributionList =
-    api.team.getAllContributionsAndPunishmentsForTeam.useQuery({
-      teamId: actualTeam,
-    });
+    api.team.getAllContributionsAndPunishmentsForTeam.useQuery(
+      {
+        teamId: actualTeam,
+      },
+      {
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+      }
+    );
   const { toast } = useToast();
   const deleteContributionOrPunishmentType =
     api.punishmentOrContributionType.delete.useMutation({

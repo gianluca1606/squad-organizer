@@ -7,9 +7,15 @@ import { DeleteContributionOrPunishmentType } from "../forms/DeleteContributionO
 const PunishmentsAndContributionsTable = () => {
   const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
   const punishmentsAndContributionList =
-    api.team.getAllContributionsAndPunishmentsForTeam.useQuery({
-      teamId: actualTeam,
-    });
+    api.team.getAllContributionsAndPunishmentsForTeam.useQuery(
+      {
+        teamId: actualTeam,
+      },
+      {
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+      }
+    );
   return (
     <div className="mt-10 flex w-full flex-col rounded-lg">
       <div className="overflow-x-auto">

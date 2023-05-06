@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, useEffect, useState } from "react";
-import { useDebounce, useLocalStorage } from "usehooks-ts";
+import { useDebounce } from "usehooks-ts";
 import { PublicUser } from "~/interfaces/PublicUser";
 import { api } from "~/utils/api";
 import { SkeletonList } from "./SkeletonList";
@@ -11,16 +11,25 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "~/components/ui/hover-card";
+import { useLocalStorage } from "@mantine/hooks";
 
 const TeamMembersList: FC = () => {
-  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
+  const [actualTeam, setActualTeamFunction] = useLocalStorage({
+    defaultValue: "",
+    key: "teamId",
+  });
   const [listData, setListData] = useState<PublicUser[] | null | undefined>(
     null
   );
   const [searchValue, setSearchValue] = useState<string>("");
   const debouncedValue = useDebounce<string>(searchValue, 500);
 
-  const teamMembers = api.team.getMembers.useQuery({ teamId: actualTeam });
+  const teamMembers = api.team.getMembers.useQuery(
+    { teamId: actualTeam },
+    {
+      refetchOnMount: false,
+    }
+  );
   useEffect(() => {
     if (teamMembers.data) {
       setListData(teamMembers.data);
@@ -33,7 +42,7 @@ const TeamMembersList: FC = () => {
   useEffect(() => {
     const filteredData = teamMembers.data?.filter((member) => {
       const name = getNameOrMail(member);
-      return name.toLowerCase().includes(debouncedValue.toLowerCase());
+      return name?.toLowerCase().includes(debouncedValue.toLowerCase());
     });
     setListData(filteredData);
     // Do fetch here...
