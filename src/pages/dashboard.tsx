@@ -10,8 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Team } from "~/components/tabs/Team";
 import { SelectTeamComponent } from "~/components/SelectTeamComponent";
 import { Personal } from "~/components/tabs/Personal";
+import { api } from "~/utils/api";
 
 const Dashboard: NextPage = () => {
+  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
+
   return (
     <>
       <Head>
@@ -19,7 +22,6 @@ const Dashboard: NextPage = () => {
         <meta name="description" content="Squad Organizer" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <div className="h-full w-full">
         <div className="flex w-full justify-center ">
           <SelectTeamComponent />

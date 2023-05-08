@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useLocalStorage } from "usehooks-ts";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/utils/api";
 
@@ -13,10 +12,15 @@ import {
 import { getNameOrMail } from "~/utils/getNameOrMail";
 import { Button } from "~/components/ui/button";
 import { Check, X } from "lucide-react";
+import { useLocalStorage } from "@mantine/hooks";
 
 export const ReceivedJoinRequests = () => {
   const { toast } = useToast();
-  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
+  const [actualTeam, setActualTeamFunction] = useLocalStorage({
+    defaultValue: "",
+    key: "teamId",
+  });
+
   const [actualTeamState, setActualTeamState] = useState<string>("");
 
   useEffect(() => {
@@ -59,11 +63,23 @@ export const ReceivedJoinRequests = () => {
     },
   });
 
-  const receivedJoinRequests = api.joinRequest.getAllForTeam.useQuery({
-    teamId: actualTeam,
-  });
+  const receivedJoinRequests = api.joinRequest.getAllForTeam.useQuery(
+    {
+      teamId: actualTeam,
+    },
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  const sentJoinRequests = api.joinRequest.getAllForLoggedInUser.useQuery();
+  const sentJoinRequests = api.joinRequest.getAllForLoggedInUser.useQuery(
+    undefined,
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const accpetJoinRequestFunction = (joinRequestId: string | undefined) => {
     if (joinRequestId) {
@@ -103,7 +119,7 @@ export const ReceivedJoinRequests = () => {
                     />
                     <div className="ml-3">
                       <p className="truncate font-medium text-gray-900 dark:text-white">
-                        {getNameOrMail(joinRequest)}
+                        {getNameOrMail(joinRequest as any)}
                       </p>
                     </div>
                   </div>

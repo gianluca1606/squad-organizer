@@ -30,6 +30,8 @@ model TeamMember {
     clerkId   String
     teamId    String
     team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+    @@unique([clerkId, teamId])
 }
 
 model TeamManager {
@@ -39,6 +41,8 @@ model TeamManager {
     team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
     teamId    String
     clerkId   String
+
+    @@unique([clerkId, teamId])
 }
 
 model JoinRequest {

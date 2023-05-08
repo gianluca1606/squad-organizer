@@ -1,9 +1,6 @@
+import { useLocalStorage } from "@mantine/hooks";
 import { ChangeEvent, FC, useEffect, useState } from "react";
 import { useDebounce } from "usehooks-ts";
-import { PublicUser } from "~/interfaces/PublicUser";
-import { api } from "~/utils/api";
-import { SkeletonList } from "./SkeletonList";
-import { getNameOrMail } from "~/utils/getNameOrMail";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Badge } from "~/components/ui/badge";
 import {
@@ -11,7 +8,19 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "~/components/ui/hover-card";
-import { useLocalStorage } from "@mantine/hooks";
+import { PublicUser } from "~/interfaces/PublicUser";
+import { api } from "~/utils/api";
+import { getNameOrMail } from "~/utils/getNameOrMail";
+import { SkeletonList } from "./SkeletonList";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { Button } from "~/components/ui/button";
 
 const TeamMembersList: FC = () => {
   const [actualTeam, setActualTeamFunction] = useLocalStorage({
@@ -27,7 +36,9 @@ const TeamMembersList: FC = () => {
   const teamMembers = api.team.getMembers.useQuery(
     { teamId: actualTeam },
     {
+      enabled: actualTeam !== "",
       refetchOnMount: false,
+      refetchOnWindowFocus: false,
     }
   );
   useEffect(() => {
@@ -116,16 +127,40 @@ const TeamMembersList: FC = () => {
               <li className="py-3 sm:py-4" key={member.id}>
                 <div className="flex items-center justify-between">
                   <div className="flex min-w-0 items-center">
-                    <Avatar>
-                      <AvatarImage src={member.profileImageUrl} alt="@shadcn" />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        {" "}
+                        <Avatar>
+                          <AvatarImage
+                            src={member.profileImageUrl}
+                            alt="@shadcn"
+                          />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel>
+                          Team Member Actions
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <Button className="mx-auto w-full">
+                            Remove from team{" "}
+                          </Button>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Button className="mx-auto w-full">
+                            {" "}
+                            Turn into admin{" "}
+                          </Button>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <div className="ml-3">
-                      <p className="truncate font-medium text-gray-900 dark:text-white">
+                      <div className="truncate font-medium text-gray-900 dark:text-white">
                         <HoverCard>
                           <HoverCardTrigger>
-                            {" "}
                             {getNameOrMail(member)}
                           </HoverCardTrigger>
                           <HoverCardContent>
@@ -134,7 +169,7 @@ const TeamMembersList: FC = () => {
                               member.updatedAt}
                           </HoverCardContent>
                         </HoverCard>
-                      </p>
+                      </div>
                       {member.isManager && (
                         <Badge variant="secondary">Manager</Badge>
                       )}
@@ -149,128 +184,6 @@ const TeamMembersList: FC = () => {
                 </div>
               </li>
             ))}
-          </ul>
-        </div>
-        <div
-          className="hidden pt-4"
-          id="about"
-          role="tabpanel"
-          aria-labelledby="about-tab"
-        >
-          <ul
-            role="list"
-            className="divide-y divide-gray-200 dark:divide-gray-700"
-          >
-            <li className="py-3 sm:py-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-8 w-8 rounded-full"
-                    src="https://flowbite-admin-dashboard.vercel.app/images/users/neil-sims.png"
-                    alt="Neil image"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-gray-900 dark:text-white">
-                    Neil Sims
-                  </p>
-                  <p className="truncate text-sm text-gray-500 dark:text-gray-400">
-                    email@flowbite.com
-                  </p>
-                </div>
-                <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                  $3320
-                </div>
-              </div>
-            </li>
-            <li className="py-3 sm:py-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-8 w-8 rounded-full"
-                    src="https://flowbite-admin-dashboard.vercel.app/images/users/bonnie-green.png"
-                    alt="Neil image"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-gray-900 dark:text-white">
-                    Bonnie Green
-                  </p>
-                  <p className="truncate text-sm text-gray-500 dark:text-gray-400">
-                    email@flowbite.com
-                  </p>
-                </div>
-                <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                  $2467
-                </div>
-              </div>
-            </li>
-            <li className="py-3 sm:py-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-8 w-8 rounded-full"
-                    src="https://flowbite-admin-dashboard.vercel.app/images/users/michael-gough.png"
-                    alt="Neil image"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-gray-900 dark:text-white">
-                    Michael Gough
-                  </p>
-                  <p className="truncate text-sm text-gray-500 dark:text-gray-400">
-                    email@flowbite.com
-                  </p>
-                </div>
-                <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                  $2235
-                </div>
-              </div>
-            </li>
-            <li className="py-3 sm:py-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-8 w-8 rounded-full"
-                    src="https://flowbite-admin-dashboard.vercel.app/images/users/thomas-lean.png"
-                    alt="Neil image"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-gray-900 dark:text-white">
-                    Thomes Lean
-                  </p>
-                  <p className="truncate text-sm text-gray-500 dark:text-gray-400">
-                    email@flowbite.com
-                  </p>
-                </div>
-                <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                  $1842
-                </div>
-              </div>
-            </li>
-            <li className="py-3 sm:py-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-8 w-8 rounded-full"
-                    src="https://flowbite-admin-dashboard.vercel.app/images/users/lana-byrd.png"
-                    alt="Neil image"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-gray-900 dark:text-white">
-                    Lana Byrd
-                  </p>
-                  <p className="truncate text-sm text-gray-500 dark:text-gray-400">
-                    email@flowbite.com
-                  </p>
-                </div>
-                <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                  $1044
-                </div>
-              </div>
-            </li>
           </ul>
         </div>
       </div>

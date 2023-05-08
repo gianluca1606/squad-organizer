@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useCopyToClipboard, useLocalStorage } from "usehooks-ts";
 import CreateTeamForm from "~/components/forms/CreateTeamForm";
 import PunishmentsAndContributionsTable from "~/components/lists/PunishmentsAndContributionsTable";
@@ -21,7 +21,24 @@ import { ReceivedJoinRequests } from "../ReceivedJoinRequests";
 export const Team = () => {
   const { toast } = useToast();
   const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
-  const teamData = api.team.getTeamData.useQuery({ teamId: actualTeam });
+
+  const punishmentsAndContributionList =
+    api.team.getAllContributionsAndPunishmentsForTeam.useQuery(
+      {
+        teamId: actualTeam,
+      },
+      {
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+      }
+    );
+  const teamData = api.team.getTeamData.useQuery(
+    { teamId: actualTeam },
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
+  );
   const [showModal, setShowModal] = useState(false);
   const [value, copy] = useCopyToClipboard();
 
@@ -53,10 +70,15 @@ export const Team = () => {
         </CardHeader>
         <CardContent>
           <div className="absolute  right-0 top-0 ">
-            <CreateTeamForm edit={false} data={teamData.data}></CreateTeamForm>
+            <CreateTeamForm
+              refetchTeamData={teamData.refetch}
+              edit={false}
+              data={teamData.data}
+            ></CreateTeamForm>
             {actualTeam && (
               <>
                 <CreateTeamForm
+                  refetchTeamData={teamData.refetch}
                   edit={true}
                   data={teamData.data}
                 ></CreateTeamForm>
@@ -103,11 +125,23 @@ export const Team = () => {
           <CardContent>
             <div className="absolute  right-0 top-0 ">
               <CreateOrEditPunishmentOrContributionDialog
+                refetchPunishmentAndContributionList={() => {
+                  punishmentsAndContributionList.refetch();
+                }}
                 edit={false}
                 data={null}
               ></CreateOrEditPunishmentOrContributionDialog>
             </div>
-            <PunishmentsAndContributionsTable></PunishmentsAndContributionsTable>
+            <PunishmentsAndContributionsTable
+              data={
+                punishmentsAndContributionList.data?.punishmentsOrContributions
+              }
+              refetchPunishmentAndContributionList={() => {
+                punishmentsAndContributionList.refetch();
+              }}
+              loading={punishmentsAndContributionList.isLoading}
+              isUserManager={teamData.data?.isUserManager}
+            />
           </CardContent>
         </Card>
       )}

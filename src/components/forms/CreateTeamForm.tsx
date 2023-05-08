@@ -1,9 +1,9 @@
+import { useLocalStorage } from "@mantine/hooks";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Button } from "components/ui/button";
 import { Edit, Loader2, Plus } from "lucide-react";
 import { FC, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useLocalStorage } from "usehooks-ts";
 import {
   Dialog,
   DialogContent,
@@ -22,8 +22,16 @@ import { RouterInputs, api } from "~/utils/api";
 
 type CreateTeamInput = RouterInputs["team"]["create"];
 
-const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
-  const teams = api.team.getTeamsForLoggedInUser.useQuery();
+const CreateTeamForm: FC<CreateEditTeamProps> = ({
+  edit,
+  data,
+  refetchTeamData,
+}) => {
+  const teams = api.team.getTeamsForLoggedInUser.useQuery(undefined, {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    enabled: false,
+  });
   const { toast } = useToast();
   const createTeam = api.team.create.useMutation({
     onSuccess: (data) => {
@@ -31,7 +39,7 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
         title: "Team created",
       });
       setActualTeamFunction(data.id);
-      getTeamById.refetch();
+      refetchTeamData();
       teams.refetch();
     },
     onError: (error) => {
@@ -48,7 +56,7 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
       });
       setActualTeamFunction(data.id);
       teams.refetch();
-      getTeamById.refetch();
+      refetchTeamData();
     },
     onError: (error) => {
       toast({
@@ -57,10 +65,10 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({ edit, data }) => {
       });
     },
   });
-  const getTeamById = api.team.getTeamData.useQuery({ teamId: data?.id });
-  const loadTeams = api.team.getTeamsForLoggedInUser.useQuery();
-  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
-
+  const [actualTeam, setActualTeamFunction] = useLocalStorage({
+    defaultValue: "",
+    key: "teamId",
+  });
   const { register, handleSubmit, setValue } = useForm<CreateTeamInput>();
 
   useEffect(() => {

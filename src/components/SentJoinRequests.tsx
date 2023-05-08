@@ -13,7 +13,13 @@ import SettingsForm from "./forms/SettingsForm";
 
 export const SentJoinRequests = () => {
   const { toast } = useToast();
-  const sentJoinRequests = api.joinRequest.getAllForLoggedInUser.useQuery();
+  const sentJoinRequests = api.joinRequest.getAllForLoggedInUser.useQuery(
+    undefined,
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const declineJoinRequest = api.joinRequest.delete.useMutation({
     onSuccess: () => {

@@ -1,8 +1,8 @@
+import { useLocalStorage } from "@mantine/hooks";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Edit, Loader2, Plus } from "lucide-react";
 import { FC, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useLocalStorage } from "usehooks-ts";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -24,19 +24,12 @@ type CreatePusnihmentOrContributionTypeInput =
   RouterInputs["punishmentOrContributionType"]["create"];
 export const CreateOrEditPunishmentOrContributionDialog: FC<
   CreateEditPusnihmentOrContributionTypeProps
-> = ({ edit, data }) => {
+> = ({ edit, data, refetchPunishmentAndContributionList }) => {
   const { toast } = useToast();
-  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
-  const punishmentsAndContributionList =
-    api.team.getAllContributionsAndPunishmentsForTeam.useQuery(
-      {
-        teamId: actualTeam,
-      },
-      {
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-      }
-    );
+  const [actualTeam, setActualTeamFunction] = useLocalStorage({
+    defaultValue: "",
+    key: "teamId",
+  });
 
   const createPunishmmentOrContributionType =
     api.punishmentOrContributionType.create.useMutation({
@@ -45,14 +38,14 @@ export const CreateOrEditPunishmentOrContributionDialog: FC<
           title: "Punishment or Contribution created",
         });
         reset();
-        punishmentsAndContributionList.refetch();
+        refetchPunishmentAndContributionList();
       },
     });
   const editPunishmmentOrContributionType =
     api.punishmentOrContributionType.update.useMutation({
       onSuccess: (data) => {
         reset();
-        punishmentsAndContributionList.refetch();
+        refetchPunishmentAndContributionList();
       },
     });
 
