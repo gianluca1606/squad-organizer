@@ -225,7 +225,10 @@ const Transactions: FC = () => {
                 <button
                   disabled={pagination.active === 1}
                   onClick={pagination.previous}
-                  className="ml-0 rounded-l-lg border border-gray-300 bg-white px-3 py-2 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                  className={
+                    (pagination.active === 1 ? "cursor-not-allowed" : "") +
+                    " ml-0 rounded-l-lg border border-gray-300 bg-white px-3 py-2 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                  }
                 >
                   Previous
                 </button>
@@ -251,7 +254,12 @@ const Transactions: FC = () => {
                     pagination.active === (pagination.range as number[]).length
                   }
                   onClick={pagination.next}
-                  className="rounded-r-lg border border-gray-300 bg-white px-3 py-2 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                  className={
+                    (pagination.active === (pagination.range as number[]).length
+                      ? "cursor-not-allowed"
+                      : "") +
+                    " rounded-r-lg border border-gray-300 bg-white px-3 py-2 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                  }
                 >
                   Next
                 </button>
