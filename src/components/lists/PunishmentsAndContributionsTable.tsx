@@ -45,7 +45,7 @@ const PunishmentsAndContributionsTable = ({
   isUserManager: boolean | undefined;
   refetchPunishmentAndContributionList: () => void;
 }) => {
-  const columns: ColumnDef<PunishmentOrContributionType>[] = [
+  const columns: (ColumnDef<PunishmentOrContributionType> | undefined)[] = [
     {
       accessorKey: "name",
       header: ({ column }) => {
@@ -67,17 +67,27 @@ const PunishmentsAndContributionsTable = ({
     {
       accessorKey: "price",
       header: "Price",
-    },
-    {
-      header: "Actions",
-      id: "actions",
       cell: ({ row }) => {
-        const punishmentOrContributionType = row.original;
+        const amount = parseFloat(row.getValue("price"));
+        const formatted = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "EUR",
+        }).format(amount);
 
-        return (
-          <>
-            {isUserManager && (
-              <td className="space-x-2 whitespace-nowrap">
+        return <>{formatted}</>;
+      },
+    },
+
+    isUserManager
+      ? {
+          header: "Actions",
+          id: "actions",
+
+          cell: ({ row }) => {
+            const punishmentOrContributionType = row.original;
+
+            return (
+              <>
                 <CreateOrEditPunishmentOrContributionDialog
                   refetchPunishmentAndContributionList={() => {
                     refetchPunishmentAndContributionList();
@@ -88,16 +98,22 @@ const PunishmentsAndContributionsTable = ({
                 <DeleteContributionOrPunishmentType
                   punishmentOrContributionId={punishmentOrContributionType.id}
                 ></DeleteContributionOrPunishmentType>
-              </td>
-            )}
-          </>
-        );
-      },
-    },
+              </>
+            );
+          },
+        }
+      : undefined,
   ];
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const isNotUndefined = (
+    item: ColumnDef<PunishmentOrContributionType> | undefined
+  ): item is ColumnDef<PunishmentOrContributionType> => {
+    return !!item;
+  };
   const table = useReactTable({
-    columns: columns,
+    columns: columns.filter(
+      isNotUndefined
+    ) as ColumnDef<PunishmentOrContributionType>[],
     data: data!,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

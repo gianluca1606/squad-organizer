@@ -21,13 +21,6 @@ export const ReceivedJoinRequests = () => {
     key: "teamId",
   });
 
-  const [actualTeamState, setActualTeamState] = useState<string>("");
-
-  useEffect(() => {
-    if (actualTeam) {
-      setActualTeamState(actualTeam);
-    }
-  }, [actualTeam]);
   const acceptJoinRequest = api.joinRequest.accept.useMutation({
     onSuccess: () => {
       toast({
@@ -70,6 +63,7 @@ export const ReceivedJoinRequests = () => {
     {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
+      enabled: actualTeam !== "",
     }
   );
 
@@ -97,7 +91,7 @@ export const ReceivedJoinRequests = () => {
     }
   };
 
-  if (actualTeamState) {
+  if (actualTeam) {
     return (
       <Card className="relative mt-4 block w-full p-6  sm:w-full xl:w-10/12 2xl:w-8/12">
         <CardHeader>
