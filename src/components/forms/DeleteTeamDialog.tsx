@@ -1,6 +1,6 @@
+import { useLocalStorage } from "@mantine/hooks";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/router";
-import { useLocalStorage } from "usehooks-ts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +17,10 @@ import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/utils/api";
 
 export const DeleteTeamDialog = () => {
-  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
+  const [actualTeam, setActualTeamFunction] = useLocalStorage({
+    defaultValue: "",
+    key: "teamId",
+  });
   const router = useRouter();
   const { toast } = useToast();
   const deleteTeam = api.team.delete.useMutation({

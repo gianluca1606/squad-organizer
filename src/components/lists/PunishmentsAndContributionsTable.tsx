@@ -1,9 +1,38 @@
+import { PunishmentOrContributionType } from "@prisma/client";
 import React from "react";
-import { useLocalStorage } from "usehooks-ts";
-import { api } from "~/utils/api";
 import { CreateOrEditPunishmentOrContributionDialog } from "../forms/CreateOrEditPunishmentDialog";
 import { DeleteContributionOrPunishmentType } from "../forms/DeleteContributionOrPunishmentDialog";
-import { PunishmentOrContributionType } from "@prisma/client";
+
+import {
+  ColumnDef,
+  SortingState,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+}
+
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+}
 
 const PunishmentsAndContributionsTable = ({
   data,
@@ -16,94 +45,142 @@ const PunishmentsAndContributionsTable = ({
   isUserManager: boolean | undefined;
   refetchPunishmentAndContributionList: () => void;
 }) => {
-  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
+  const columns: ColumnDef<PunishmentOrContributionType>[] = [
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+    },
+    {
+      accessorKey: "price",
+      header: "Price",
+    },
+    {
+      header: "Actions",
+      id: "actions",
+      cell: ({ row }) => {
+        const punishmentOrContributionType = row.original;
 
+        return (
+          <>
+            {isUserManager && (
+              <td className="space-x-2 whitespace-nowrap">
+                <CreateOrEditPunishmentOrContributionDialog
+                  refetchPunishmentAndContributionList={() => {
+                    refetchPunishmentAndContributionList();
+                  }}
+                  edit={true}
+                  data={punishmentOrContributionType}
+                ></CreateOrEditPunishmentOrContributionDialog>
+                <DeleteContributionOrPunishmentType
+                  punishmentOrContributionId={punishmentOrContributionType.id}
+                ></DeleteContributionOrPunishmentType>
+              </td>
+            )}
+          </>
+        );
+      },
+    },
+  ];
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const table = useReactTable({
+    columns: columns,
+    data: data!,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
+  });
   return (
-    <div className="mt-10 flex w-full flex-col rounded-lg">
-      <div className="overflow-x-auto">
-        <div className="inline-block min-w-full align-middle">
-          <div className="overflow-hidden shadow">
-            <table className="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-600">
-              <thead className="bg-gray-100 dark:bg-gray-700">
-                <tr>
-                  <th
-                    scope="col"
-                    className="p-4 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400"
+    <>
+      <div className="rounded-md border">
+        <div>
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
                   >
-                    Name
-                  </th>
-
-                  <th
-                    scope="col"
-                    className="p-4 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400"
-                  >
-                    Description
-                  </th>
-
-                  <th
-                    scope="col"
-                    className="p-4 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400"
-                  >
-                    Price
-                  </th>
-
-                  <th
-                    scope="col"
-                    className="p-4 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400"
-                  >
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
-                {data &&
-                  data
-                    .sort((a, b) =>
-                      a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-                    )
-                    .map((contributionOrPunishment) => (
-                      <tr
-                        className="hover:bg-gray-100 dark:hover:bg-gray-700"
-                        key={contributionOrPunishment.id}
-                      >
-                        <td className="whitespace-nowrap p-4 text-sm font-normal text-gray-500 dark:text-gray-400">
-                          <div className="text-base font-semibold text-gray-900 dark:text-white">
-                            {contributionOrPunishment.name}
-                          </div>
-                        </td>
-
-                        <td className="max-w-sm overflow-hidden truncate p-4 text-base font-normal text-gray-500 dark:text-gray-400 xl:max-w-xs">
-                          {contributionOrPunishment.description}
-                        </td>
-
-                        <td className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
-                          {contributionOrPunishment.price}
-                        </td>
-
-                        {isUserManager && (
-                          <td className="space-x-2 whitespace-nowrap p-4">
-                            <CreateOrEditPunishmentOrContributionDialog
-                              refetchPunishmentAndContributionList={() => {
-                                refetchPunishmentAndContributionList();
-                              }}
-                              edit={true}
-                              data={contributionOrPunishment}
-                            ></CreateOrEditPunishmentOrContributionDialog>
-                            <DeleteContributionOrPunishmentType
-                              punishmentOrContributionId={
-                                contributionOrPunishment.id
-                              }
-                            ></DeleteContributionOrPunishmentType>
-                          </td>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
                         )}
-                      </tr>
+                      </TableCell>
                     ))}
-              </tbody>
-            </table>
-          </div>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
