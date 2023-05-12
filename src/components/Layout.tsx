@@ -8,7 +8,7 @@ interface Props {
 
 const Layout: FC<Props> = ({ children }: Props) => {
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen flex-col font-poppins">
       <NavBar></NavBar>
       <div className="flex  flex-grow flex-col bg-white text-black dark:bg-background dark:text-white">
         <main className="flex  flex-grow flex-col items-center justify-center ">

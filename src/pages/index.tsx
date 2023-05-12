@@ -7,13 +7,13 @@ import { api } from "~/utils/api";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 
-export type NextPageWithAuth<P = {}, IP = P> = NextPage<P, IP> & {
+export type NextPageWithMessages<P = {}, IP = P> = NextPage<P, IP> & {
   messages: string[];
 };
 
 // create a description for an application where people can manage their squads / sports teams / etc.
 
-const Home: NextPageWithAuth = () => {
+const Home: NextPageWithMessages = () => {
   //const hello = api.example.hello.useQuery({ text: "from tRPC" });
   //@ts-ignore
   const t: any = useTranslations("Home");
@@ -495,7 +495,10 @@ export async function getServerSideProps({
     props: {
       // You can get the messages from anywhere you like. The recommended pattern
       // is to put them in JSON files separated by locale (e.g. `en.json`).
-      messages: pick(await import(`../messages/${locale}.json`), Home.messages),
+      messages: pick(
+        await import(`../../messages/${locale}.json`),
+        Home.messages
+      ),
       revalidate: 1,
     },
   };

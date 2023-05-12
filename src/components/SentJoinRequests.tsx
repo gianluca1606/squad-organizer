@@ -34,7 +34,6 @@ export const SentJoinRequests = () => {
         title: "Error",
         description: "Some error occured try later again or refresh the page",
       });
-      alert(error);
     },
   });
 

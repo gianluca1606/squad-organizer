@@ -41,10 +41,13 @@ import { z } from "zod";
 import { DataTableColumnHeader } from "../table/data-table-column-header";
 import { DataTableRowActions } from "../table/data-table-row-actions";
 import { DataTableToolbar } from "../table/data-table-toolbar";
+import { useTranslations } from "next-intl";
 
 type TeamBalanceList =
   RouterOutputs["teamBalance"]["getAllForTeam"]["listWithClerks"]["0"];
 const Transactions: FC = () => {
+  const t = useTranslations("Team");
+
   const { toast } = useToast();
   const [actualTeam, setActualTeamFunction] = useLocalStorage({
     defaultValue: "",
@@ -200,14 +203,11 @@ const Transactions: FC = () => {
   }, [allTransactions.data]);
 
   return (
-    <div className="flex justify-center ">
+    <div className="flex  flex-col items-center ">
       <Card className="relative mt-4 block w-full  p-0 sm:w-full md:p-6 xl:w-10/12 2xl:w-8/12">
         <CardHeader>
-          <CardTitle> Team Balance</CardTitle>
-          <CardDescription>
-            Here you can see all punishments and contributions types of your
-            squad
-          </CardDescription>
+          <CardTitle> {t("balance")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="absolute  right-0 top-0 ">
@@ -276,6 +276,127 @@ const Transactions: FC = () => {
                 </Table>
               </div>
               <DataTablePagination table={table} />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <Card className="relative mt-4 block w-full  p-0 sm:w-full md:p-6 xl:w-10/12 2xl:w-8/12">
+        <CardHeader>
+          <CardTitle> Statistics</CardTitle>
+          <CardDescription>Here you can see all the statistics</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+              <div className="flex flex-row items-center justify-between space-y-0 p-6 pb-2">
+                <h3 className="text-sm font-medium tracking-tight">
+                  Total Revenue
+                </h3>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={24}
+                  height={24}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4 text-muted-foreground"
+                >
+                  <line x1={12} x2={12} y1={2} y2={22} />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
+              <div className="p-6 pt-0">
+                <div className="text-2xl font-bold">$45,231.89</div>
+                <p className="text-xs text-muted-foreground">
+                  +20.1% from last month
+                </p>
+              </div>
+            </div>
+            <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+              <div className="flex flex-row items-center justify-between space-y-0 p-6 pb-2">
+                <h3 className="text-sm font-medium tracking-tight">
+                  Subscriptions
+                </h3>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={24}
+                  height={24}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4 text-muted-foreground"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx={9} cy={7} r={4} />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <div className="p-6 pt-0">
+                <div className="text-2xl font-bold">+2350</div>
+                <p className="text-xs text-muted-foreground">
+                  +180.1% from last month
+                </p>
+              </div>
+            </div>
+            <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+              <div className="flex flex-row items-center justify-between space-y-0 p-6 pb-2">
+                <h3 className="text-sm font-medium tracking-tight">Sales</h3>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={24}
+                  height={24}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4 text-muted-foreground"
+                >
+                  <rect width={20} height={14} x={2} y={5} rx={2} />
+                  <line x1={2} x2={22} y1={10} y2={10} />
+                </svg>
+              </div>
+              <div className="p-6 pt-0">
+                <div className="text-2xl font-bold">+12,234</div>
+                <p className="text-xs text-muted-foreground">
+                  +19% from last month
+                </p>
+              </div>
+            </div>
+            <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+              <div className="flex flex-row items-center justify-between space-y-0 p-6 pb-2">
+                <h3 className="text-sm font-medium tracking-tight">
+                  Active Now
+                </h3>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={24}
+                  height={24}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4 text-muted-foreground"
+                >
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+              </div>
+              <div className="p-6 pt-0">
+                <div className="text-2xl font-bold">+573</div>
+                <p className="text-xs text-muted-foreground">
+                  +201 since last hour
+                </p>
+              </div>
             </div>
           </div>
         </CardContent>

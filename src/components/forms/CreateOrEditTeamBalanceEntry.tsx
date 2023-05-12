@@ -120,7 +120,6 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
     setValue("entryType", entryType);
   };
   const setPunishmentOrContributionName = (name: string) => {
-    alert("test");
     setValue("name", name);
     console.log(getValues("name"));
   };

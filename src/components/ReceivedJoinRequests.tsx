@@ -34,7 +34,6 @@ export const ReceivedJoinRequests = () => {
         title: "Error",
         description: "Some error occured try later again or refresh the page",
       });
-      alert(error);
     },
   });
 
@@ -52,7 +51,6 @@ export const ReceivedJoinRequests = () => {
         title: "Error",
         description: "Some error occured try later again or refresh the page",
       });
-      alert(error);
     },
   });
 

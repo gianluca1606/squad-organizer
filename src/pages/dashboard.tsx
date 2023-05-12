@@ -1,20 +1,18 @@
-import { type NextPage } from "next";
+import { GetServerSidePropsContext, type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
-import { useRef, useState } from "react";
-import { useLocalStorage, useOnClickOutside } from "usehooks-ts";
 import Transactions from "~/components/tabs/Transactions";
-import CreateTeamForm from "~/components/forms/CreateTeamForm";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { Team } from "~/components/tabs/Team";
 import { SelectTeamComponent } from "~/components/SelectTeamComponent";
 import { Personal } from "~/components/tabs/Personal";
-import { api } from "~/utils/api";
+import { Team } from "~/components/tabs/Team";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { pick } from "lodash";
 
-const Dashboard: NextPage = () => {
-  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
+export type NextPageWithMessages<P = {}, IP = P> = NextPage<P, IP> & {
+  messages: string[];
+};
 
+const Dashboard: NextPageWithMessages = () => {
   return (
     <>
       <Head>
@@ -51,4 +49,19 @@ const Dashboard: NextPage = () => {
   );
 };
 
+Dashboard.messages = ["Settings", "Team"];
 export default Dashboard;
+
+export async function getServerSideProps(props: GetServerSidePropsContext) {
+  return {
+    props: {
+      // You can get the messages from anywhere you like. The recommended pattern
+      // is to put them in JSON files separated by locale (e.g. `en.json`).
+      messages: pick(
+        await import(`../../messages/${props.req.cookies.locale}.json`),
+        Dashboard.messages
+      ),
+      revalidate: 1,
+    },
+  };
+}

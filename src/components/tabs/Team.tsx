@@ -1,9 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useCopyToClipboard, useLocalStorage } from "usehooks-ts";
 import CreateTeamForm from "~/components/forms/CreateTeamForm";
 import PunishmentsAndContributionsTable from "~/components/lists/PunishmentsAndContributionsTable";
 import TeamMembersList from "~/components/lists/TeamMembersList";
 
+import { PunishmentOrContributionType } from "@prisma/client";
 import { DeleteTeamDialog } from "~/components/forms/DeleteTeamDialog";
 import {
   Card,
@@ -15,9 +16,8 @@ import {
 import { Input } from "~/components/ui/input";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/utils/api";
-import { CreateOrEditPunishmentOrContributionDialog } from "../forms/CreateOrEditPunishmentDialog";
 import { ReceivedJoinRequests } from "../ReceivedJoinRequests";
-import { PunishmentOrContributionType } from "@prisma/client";
+import { CreateOrEditPunishmentOrContributionDialog } from "../forms/CreateOrEditPunishmentDialog";
 
 export const Team = () => {
   const { toast } = useToast();

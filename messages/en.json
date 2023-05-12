@@ -7,5 +7,11 @@
       "select": "test 123",
       "german": "German",
       "english": "english"
+    },
+
+    "Team" : {
+      "balance": "Squad Balance",
+      "description": "Here you can see all punishments and contributions types of your squad test 123",
+      "filter": "Filter name/sponsor"
     }
   }
