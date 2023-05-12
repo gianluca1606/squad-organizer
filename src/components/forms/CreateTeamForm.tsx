@@ -2,6 +2,7 @@ import { useLocalStorage } from "@mantine/hooks";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Button } from "components/ui/button";
 import { Edit, Loader2, Plus } from "lucide-react";
+import { useRouter } from "next/router";
 import { FC, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -27,6 +28,7 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({
   data,
   refetchTeamData,
 }) => {
+  const router = useRouter();
   const teams = api.team.getTeamsForLoggedInUser.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -41,6 +43,7 @@ const CreateTeamForm: FC<CreateEditTeamProps> = ({
       setActualTeamFunction(data.id);
       refetchTeamData();
       teams.refetch();
+      router.reload();
     },
     onError: (error) => {
       toast({

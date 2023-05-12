@@ -26,6 +26,8 @@ export const SelectTeamComponent = () => {
   const getTeamNameForId = (id: string) => {
     return teams.data?.find((team) => team.id === id)?.name || "Select Team";
   };
+
+  if (teams.isLoading) return null;
   return (
     <Select
       disabled={teams.data?.length === 0}

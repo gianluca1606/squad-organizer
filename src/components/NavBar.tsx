@@ -106,6 +106,10 @@ export function NavBar() {
                           height={40}
                           preserveAspectRatio="xMidYMid meet"
                           version="1.0"
+                          id="german-flag"
+                          style={{
+                            zIndex: 1000,
+                          }}
                         >
                           <defs>
                             <clipPath id="id1">
@@ -163,6 +167,10 @@ export function NavBar() {
                           height={40}
                           preserveAspectRatio="xMidYMid meet"
                           version="1.0"
+                          id="usa-flag"
+                          style={{
+                            zIndex: 1000,
+                          }}
                         >
                           <defs>
                             <clipPath id="id1">

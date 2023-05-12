@@ -13,4 +13,5 @@ export type PublicUser = {
   profileImageUrl: string;
   primaryEmailAddressId: string | null;
   isManager?: boolean;
+  isOwner?: boolean;
 };

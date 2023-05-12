@@ -26,7 +26,18 @@ export const punishmentOrContributionTypeRouter = createTRPCRouter({
         ctx.auth.userId
       );
 
-      if (!isUserManager) throw new TRPCError({ code: "FORBIDDEN" });
+      const isUserOwner = await AuthUtil.isUserOwner(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+
+      const canCreatePunishmentOrContribution = !!(
+        isUserOwner || isUserManager
+      );
+
+      if (!canCreatePunishmentOrContribution)
+        throw new TRPCError({ code: "FORBIDDEN" });
       const data = await ctx.prisma.punishmentOrContributionType.create({
         data: {
           name: input.name,
@@ -77,7 +88,18 @@ export const punishmentOrContributionTypeRouter = createTRPCRouter({
         ctx.auth.userId
       );
 
-      if (!isUserManager) throw new TRPCError({ code: "FORBIDDEN" });
+      const isUserOwner = await AuthUtil.isUserOwner(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+
+      const canEditPunishmentsOrContributions = !!(
+        isUserOwner || isUserManager
+      );
+
+      if (!canEditPunishmentsOrContributions)
+        throw new TRPCError({ code: "FORBIDDEN" });
 
       return await ctx.prisma.punishmentOrContributionType.update({
         data: {

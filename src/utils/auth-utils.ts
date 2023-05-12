@@ -16,8 +16,18 @@ export class AuthUtil {
     teamId: string | undefined,
     clerkId: string
   ) => {
-    return prisma.teamManager.findFirst({
-      where: { teamId: teamId, clerkId },
+    return prisma.role.findFirst({
+      where: { teamId: teamId, clerkId, name: "MANAGER" },
+    });
+  };
+
+  public static isUserOwner = (
+    prisma: PrismaClient,
+    teamId: string | undefined,
+    clerkId: string
+  ) => {
+    return prisma.role.findFirst({
+      where: { teamId: teamId, clerkId, name: "OWNER" },
     });
   };
 }

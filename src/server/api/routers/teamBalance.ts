@@ -10,6 +10,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { AuthUtil } from "~/utils/auth-utils";
+import { getNameOrMail } from "~/utils/getNameOrMail";
 
 export const teamBalanceRouter = createTRPCRouter({
   create: protectedProcedure
@@ -24,8 +25,6 @@ export const teamBalanceRouter = createTRPCRouter({
         teamId: z.string(),
         clerkId: z.string(),
         payed: z.string().transform((value) => {
-          console.log("logging payed value");
-          console.log(value);
           if (value === "on") return true;
           if (value === "off") return false;
           return false;
@@ -39,7 +38,18 @@ export const teamBalanceRouter = createTRPCRouter({
         ctx.auth.userId
       );
 
-      if (!isUserManager) throw new TRPCError({ code: "FORBIDDEN" });
+      const isUserOwner = await AuthUtil.isUserOwner(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+
+      const canEditPunishmentsOrContributions = !!(
+        isUserOwner || isUserManager
+      );
+
+      if (!canEditPunishmentsOrContributions)
+        throw new TRPCError({ code: "FORBIDDEN" });
       let result: TeamBalance | null = null;
       if (input.entryType === "sponsor") {
         result = await ctx.prisma.teamBalance.create({
@@ -90,13 +100,13 @@ export const teamBalanceRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(
       z.object({
-        teamBalanceId: z.string(),
+        teamBalanceEntryId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const dataToDelete = await ctx.prisma.teamBalance.findFirst({
         where: {
-          id: input.teamBalanceId,
+          id: input.teamBalanceEntryId,
         },
       });
       const isUserManager = await AuthUtil.isUserManager(
@@ -105,10 +115,21 @@ export const teamBalanceRouter = createTRPCRouter({
         ctx.auth.userId
       );
 
-      if (!isUserManager) throw new TRPCError({ code: "FORBIDDEN" });
+      const isUserOwner = await AuthUtil.isUserOwner(
+        ctx.prisma,
+        dataToDelete?.teamId,
+        ctx.auth.userId
+      );
+
+      const canEditPunishmentsOrContributions = !!(
+        isUserOwner || isUserManager
+      );
+
+      if (!canEditPunishmentsOrContributions)
+        throw new TRPCError({ code: "FORBIDDEN" });
       return await ctx.prisma.teamBalance.delete({
         where: {
-          id: input.teamBalanceId,
+          id: input.teamBalanceEntryId,
         },
       });
     }),
@@ -164,23 +185,34 @@ export const teamBalanceRouter = createTRPCRouter({
             };
             return {
               ...item,
+              userName: getNameOrMail(publicUser),
               publicUser,
             };
           }
           return {
             ...item,
+            userName: item.sponsorName,
             publicUser: null,
           };
         })
       );
 
-      const isUserManager = await ctx.prisma.teamManager.findFirst({
-        where: { teamId: input.teamId, clerkId: ctx.auth.userId },
-      });
+      const isUserManager = AuthUtil.isUserManager(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+
+      const isUserOwner = AuthUtil.isUserOwner(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
 
       return {
         listWithClerks,
         isUserManager: !!isUserManager,
+        isUserOwner: !!isUserOwner,
       };
     }),
 });

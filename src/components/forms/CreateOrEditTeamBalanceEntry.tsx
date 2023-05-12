@@ -53,7 +53,6 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
     defaultValue: "",
     key: "teamId",
   });
-  const [actualTeamState, setActualTeamState] = useState<string>("");
   const { register, handleSubmit, setValue, reset, getValues, watch } =
     useForm<CreateOrUpDateTeamBalanceEntry>();
 
@@ -95,14 +94,8 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
   }, [data]);
 
   useEffect(() => {
-    if (actualTeam) {
-      setActualTeamState(actualTeam);
-    }
-  }, [actualTeam]);
-
-  useEffect(() => {
     if (!edit) {
-      setValue("teamId", actualTeamState);
+      setValue("teamId", actualTeam);
       setValue("entryType", "punishmentOrContribution");
       if (
         punishmentsAndContributionList?.punishmentsOrContributions &&
@@ -117,7 +110,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
         setValue("clerkId", allMembers[0]!.id);
       }
     }
-  }, [actualTeamState, punishmentsAndContributionList, allMembers]);
+  }, [actualTeam, punishmentsAndContributionList, allMembers]);
 
   const setMemberName = (memberId: string) => {
     setValue("clerkId", memberId);
@@ -127,7 +120,9 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
     setValue("entryType", entryType);
   };
   const setPunishmentOrContributionName = (name: string) => {
+    alert("test");
     setValue("name", name);
+    console.log(getValues("name"));
   };
 
   const onSubmit = (formData: CreateOrUpDateTeamBalanceEntry) => {
@@ -141,7 +136,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
     }
   };
   return (
-    <Dialog>
+    <Dialog modal={true}>
       <DialogTrigger asChild>
         <Button variant="ghost">
           {edit ? <Edit className="h-4 w-4" /> : <Plus className="h-5 w-5 " />}
@@ -158,7 +153,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
           <Label htmlFor="teamname">Entry type</Label>
           <Select
             required
-            value={getValues("entryType")}
+            value={watch("entryType")}
             onValueChange={setEntryType}
           >
             <SelectTrigger>
@@ -176,10 +171,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
             watch("entryType") === "expenses") && (
             <>
               <Label htmlFor="teamname">Member</Label>
-              <Select
-                value={getValues("clerkId")}
-                onValueChange={setMemberName}
-              >
+              <Select value={watch("clerkId")} onValueChange={setMemberName}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a member" />
                 </SelectTrigger>
@@ -216,7 +208,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
                   punishmentsAndContributionList?.punishmentsOrContributions
                     .length === 0
                 }
-                value={getValues("name")}
+                value={watch("name")}
                 onValueChange={setPunishmentOrContributionName}
               >
                 <SelectTrigger>

@@ -17,11 +17,11 @@ model Team {
     name                         String
     description                  String?
     location                     String?
-    manager                      TeamManager[]
     joinRequest                  JoinRequest[]
     teamBalance                  TeamBalance[]
     teamMember                   TeamMember[]
     punishmentOrContributionType PunishmentOrContributionType[]
+    role                         Role[]
 }
 
 model TeamMember {
@@ -34,15 +34,16 @@ model TeamMember {
     @@unique([clerkId, teamId])
 }
 
-model TeamManager {
+model Role {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    name      String
     team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
     teamId    String
     clerkId   String
 
-    @@unique([clerkId, teamId])
+    @@unique([clerkId, teamId, name])
 }
 
 model JoinRequest {

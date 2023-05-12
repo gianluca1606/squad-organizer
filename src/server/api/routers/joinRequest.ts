@@ -93,9 +93,16 @@ export const joinRequestRouter = createTRPCRouter({
         ctx.auth.userId
       );
 
-      if (!isUserManager) {
+      const isUserOwner = await AuthUtil.isUserOwner(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+
+      const isUserOwnerOrManager = !!(isUserManager || isUserOwner);
+      if (!isUserOwnerOrManager) {
         throw new TRPCError({
-          code: "UNAUTHORIZED",
+          code: "FORBIDDEN",
           message: "You are not a manager of this team",
         });
       }

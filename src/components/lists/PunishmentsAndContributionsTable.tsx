@@ -24,25 +24,17 @@ import {
   TableRow,
 } from "~/components/ui/table";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-}
-
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-}
-
 const PunishmentsAndContributionsTable = ({
   data,
   loading,
   refetchPunishmentAndContributionList,
   isUserManager,
+  isUserOwner,
 }: {
-  data: PunishmentOrContributionType[] | undefined;
+  data: PunishmentOrContributionType[];
   loading: boolean;
   isUserManager: boolean | undefined;
+  isUserOwner: boolean | undefined;
   refetchPunishmentAndContributionList: () => void;
 }) => {
   const columns: (ColumnDef<PunishmentOrContributionType> | undefined)[] = [
@@ -78,7 +70,7 @@ const PunishmentsAndContributionsTable = ({
       },
     },
 
-    isUserManager
+    isUserManager || isUserOwner
       ? {
           header: "Actions",
           id: "actions",
@@ -114,7 +106,7 @@ const PunishmentsAndContributionsTable = ({
     columns: columns.filter(
       isNotUndefined
     ) as ColumnDef<PunishmentOrContributionType>[],
-    data: data!,
+    data: data,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,

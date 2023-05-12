@@ -56,8 +56,6 @@ const TeamMembersList: FC = () => {
       return name?.toLowerCase().includes(debouncedValue.toLowerCase());
     });
     setListData(filteredData);
-    // Do fetch here...
-    // Triggers when "debouncedValue" changes
   }, [debouncedValue]);
   return (
     <div className="mt-6 overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:h-fit sm:p-6">
@@ -173,7 +171,10 @@ const TeamMembersList: FC = () => {
                       {member.isManager && (
                         <Badge variant="secondary">Manager</Badge>
                       )}
-                      {!member.isManager && (
+                      {member.isOwner && (
+                        <Badge variant="secondary">Owner</Badge>
+                      )}
+                      {!member.isManager && !member.isOwner && (
                         <Badge variant="secondary">Member</Badge>
                       )}
                     </div>

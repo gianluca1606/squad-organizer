@@ -27,8 +27,9 @@ export const teamRouter = createTRPCRouter({
           name: input.name,
           description: input.description,
           location: input.location,
-          manager: {
+          role: {
             create: {
+              name: "OWNER",
               clerkId: ctx.auth.userId,
             },
           },
@@ -70,6 +71,18 @@ export const teamRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ teamId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const isUserOwner = await AuthUtil.isUserOwner(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+
+      if (!isUserOwner) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not the owner of this team",
+        });
+      }
       const deleted = await ctx.prisma.team.delete({
         where: {
           id: input.teamId,
@@ -84,8 +97,9 @@ export const teamRouter = createTRPCRouter({
       const isUserManager = await ctx.prisma.team.findFirst({
         where: {
           id: input.teamId,
-          manager: {
+          role: {
             some: {
+              name: "OWNER",
               clerkId: ctx.auth.userId,
             },
           },
@@ -110,7 +124,7 @@ export const teamRouter = createTRPCRouter({
     return ctx.prisma.team.findMany({
       where: {
         OR: [
-          { manager: { some: { clerkId: ctx.auth.userId } } },
+          { role: { some: { clerkId: ctx.auth.userId } } },
           { teamMember: { some: { clerkId: ctx.auth.userId } } },
         ],
       },
@@ -135,6 +149,12 @@ export const teamRouter = createTRPCRouter({
         ctx.auth.userId
       );
 
+      const isUserOwner = await AuthUtil.isUserOwner(
+        ctx.prisma,
+        teamData?.id,
+        ctx.auth.userId
+      );
+
       const isUserAlreadyInTeam = await AuthUtil.isUserTeamMember(
         ctx.prisma,
         teamData?.id,
@@ -153,6 +173,7 @@ export const teamRouter = createTRPCRouter({
         isUserAlreadyInTeam: !!isUserAlreadyInTeam,
         userRequestedToJoinTeam: !!userRequestedToJoinTeam,
         isUserManager: !!isUserManager,
+        isUserOwner: !!isUserOwner,
       };
     }),
 
@@ -160,24 +181,30 @@ export const teamRouter = createTRPCRouter({
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       //check if user is member of team or manager of team
-      const isUserManager = await AuthUtil.isUserManager(
-        ctx.prisma,
-        input.teamId,
-        ctx.auth.userId
-      );
-
       const isUserMember = await AuthUtil.isUserTeamMember(
         ctx.prisma,
         input.teamId,
         ctx.auth.userId
       );
 
-      if (!isUserManager && !isUserMember) {
+      if (!isUserMember) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You are not a member of this team",
         });
       }
+
+      const isUserOwner = await AuthUtil.isUserOwner(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+
+      const isUserManager = await AuthUtil.isUserManager(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
 
       const clerksIds = await ctx.prisma.teamMember.findMany({
         where: { teamId: input.teamId },
@@ -201,6 +228,7 @@ export const teamRouter = createTRPCRouter({
           profileImageUrl: member.profileImageUrl,
           primaryEmailAddressId: member.primaryEmailAddressId,
           isManager: isUserManager?.clerkId === member.id,
+          isOwner: isUserOwner?.clerkId === member.id,
         };
       });
 
@@ -209,7 +237,7 @@ export const teamRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ ctx }) => {
     // TODO should only be able to get all teams if you're an admin
     return ctx.prisma.team.findMany({
-      where: { manager: { some: { clerkId: ctx.auth.userId } } },
+      where: { role: { some: { clerkId: ctx.auth.userId } } },
     });
   }),
 
@@ -223,14 +251,22 @@ export const teamRouter = createTRPCRouter({
         ctx.auth.userId
       );
 
+      const isUserOwner = await AuthUtil.isUserOwner(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+
       const punishmentsOrContributions =
         await ctx.prisma.punishmentOrContributionType.findMany({
           where: { teamId: input.teamId },
         });
-
+      const canEditPunishmentsOrContributions = !!(
+        isUserOwner || isUserManager
+      );
       return {
         punishmentsOrContributions,
-        isUserManager: isUserManager ? true : false,
+        canEditPunishmentsOrContributions: canEditPunishmentsOrContributions,
       };
     }),
 });

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useCopyToClipboard, useLocalStorage } from "usehooks-ts";
 import CreateTeamForm from "~/components/forms/CreateTeamForm";
 import PunishmentsAndContributionsTable from "~/components/lists/PunishmentsAndContributionsTable";
@@ -17,11 +17,15 @@ import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/utils/api";
 import { CreateOrEditPunishmentOrContributionDialog } from "../forms/CreateOrEditPunishmentDialog";
 import { ReceivedJoinRequests } from "../ReceivedJoinRequests";
+import { PunishmentOrContributionType } from "@prisma/client";
 
 export const Team = () => {
   const { toast } = useToast();
   const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
-
+  const [
+    punishmentsAndContributionListData,
+    setPunishmentOrContributionListData,
+  ] = useState<PunishmentOrContributionType[]>([]);
   const punishmentsAndContributionList =
     api.team.getAllContributionsAndPunishmentsForTeam.useQuery(
       {
@@ -30,6 +34,10 @@ export const Team = () => {
       {
         refetchOnMount: false,
         refetchOnWindowFocus: false,
+        enabled: actualTeam !== "",
+        onSuccess: (data) => {
+          setPunishmentOrContributionListData(data.punishmentsOrContributions);
+        },
       }
     );
   const teamData = api.team.getTeamData.useQuery(
@@ -37,9 +45,17 @@ export const Team = () => {
     {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
+      enabled: actualTeam !== "",
     }
   );
-  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (punishmentsAndContributionList.data) {
+      setPunishmentOrContributionListData(
+        punishmentsAndContributionList.data.punishmentsOrContributions
+      );
+    }
+  }, [punishmentsAndContributionList.data]);
   const [value, copy] = useCopyToClipboard();
 
   const getHostUrl = () => {
@@ -75,7 +91,7 @@ export const Team = () => {
               edit={false}
               data={teamData.data}
             ></CreateTeamForm>
-            {actualTeam && (
+            {actualTeam && teamData.data?.isUserOwner && (
               <>
                 <CreateTeamForm
                   refetchTeamData={teamData.refetch}
@@ -133,19 +149,20 @@ export const Team = () => {
               ></CreateOrEditPunishmentOrContributionDialog>
             </div>
             <PunishmentsAndContributionsTable
-              data={
-                punishmentsAndContributionList.data?.punishmentsOrContributions
-              }
+              data={punishmentsAndContributionListData}
               refetchPunishmentAndContributionList={() => {
                 punishmentsAndContributionList.refetch();
               }}
               loading={punishmentsAndContributionList.isLoading}
               isUserManager={teamData.data?.isUserManager}
+              isUserOwner={teamData.data?.isUserOwner}
             />
           </CardContent>
         </Card>
       )}
-      {teamData.data?.isUserManager && <ReceivedJoinRequests />}
+      {(teamData.data?.isUserManager || teamData.data?.isUserOwner) && (
+        <ReceivedJoinRequests />
+      )}
     </div>
   );
 };

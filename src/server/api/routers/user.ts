@@ -29,7 +29,18 @@ export const userRouter = createTRPCRouter({
         ctx.auth.userId
       );
 
-      if (!isUserManager) throw new TRPCError({ code: "FORBIDDEN" });
+      const isUserOwner = AuthUtil.isUserOwner(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+
+      const canEditPunishmentsOrContributions = !!(
+        isUserOwner || isUserManager
+      );
+
+      if (!canEditPunishmentsOrContributions)
+        throw new TRPCError({ code: "FORBIDDEN" });
 
       // check if user is already manager
       const isUserAlreadyManager = await AuthUtil.isUserManager(
@@ -60,9 +71,10 @@ export const userRouter = createTRPCRouter({
       }
 
       // turn user into manager
-      const data = await ctx.prisma.teamManager.create({
+      await ctx.prisma.role.create({
         data: {
           teamId: input.teamId,
+          name: "MANAGER",
           clerkId: input.clerkId,
         },
       });
