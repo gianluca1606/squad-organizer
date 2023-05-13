@@ -15,12 +15,10 @@ import {
   AlertDialogTrigger,
 } from "components/ui/alert-dialog";
 import { Button } from "components/ui/button";
-import { useLocalStorage } from "usehooks-ts";
 
 const AccountSettingsForm: FC = () => {
   const deleteUser = api.user.delete.useMutation();
-  //@ts-ignore
-  const t: any = useTranslations("Settings");
+  const t = useTranslations("Settings");
   const router = useRouter();
 
   // todo add dialog for confirmation
@@ -35,7 +33,7 @@ const AccountSettingsForm: FC = () => {
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="destructive" disabled={deleteUser.isLoading}>
-              Delete Account
+              {t("delete")}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>

@@ -135,7 +135,13 @@ const Transactions: FC = () => {
         <DataTableColumnHeader column={column} title="Price" />
       ),
       cell: ({ row }) => {
-        return <>{row.getValue("price")}</>;
+        const amount = parseFloat(row.getValue("price"));
+        const formatted = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "EUR",
+        }).format(amount);
+
+        return <>{formatted}</>;
       },
       filterFn: (row, id, value) => {
         return value.includes(row.getValue(id));
@@ -162,6 +168,9 @@ const Transactions: FC = () => {
     },
     {
       id: "actions",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Actions" />
+      ),
       cell: ({ row }) => (
         <DataTableRowActions
           row={row}
@@ -206,8 +215,8 @@ const Transactions: FC = () => {
     <div className="flex  flex-col items-center ">
       <Card className="relative mt-4 block w-full  p-0 sm:w-full md:p-6 xl:w-10/12 2xl:w-8/12">
         <CardHeader>
-          <CardTitle> {t("balance")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
+          <CardTitle> {t("balance.title")}</CardTitle>
+          <CardDescription>{t("balance.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="absolute  right-0 top-0 ">

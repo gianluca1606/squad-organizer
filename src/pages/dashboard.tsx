@@ -7,12 +7,14 @@ import { Personal } from "~/components/tabs/Personal";
 import { Team } from "~/components/tabs/Team";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { pick } from "lodash";
+import { useTranslations } from "next-intl";
 
 export type NextPageWithMessages<P = {}, IP = P> = NextPage<P, IP> & {
   messages: string[];
 };
 
 const Dashboard: NextPageWithMessages = () => {
+  const t = useTranslations("Dashboard");
   return (
     <>
       <Head>
@@ -27,9 +29,11 @@ const Dashboard: NextPageWithMessages = () => {
         <Tabs defaultValue="transactions">
           <div className="flex w-full justify-center">
             <TabsList className="grid w-full grid-cols-3 sm:w-full xl:w-10/12 2xl:w-8/12">
-              <TabsTrigger value="transactions">Transactions</TabsTrigger>
-              <TabsTrigger value="team">team</TabsTrigger>
-              <TabsTrigger value="personal">personal</TabsTrigger>
+              <TabsTrigger value="transactions">
+                {t("tabs.balance")}
+              </TabsTrigger>
+              <TabsTrigger value="team">{t("tabs.squad")}</TabsTrigger>
+              <TabsTrigger value="personal">{t("tabs.personal")}</TabsTrigger>
             </TabsList>
           </div>
 
@@ -49,7 +53,7 @@ const Dashboard: NextPageWithMessages = () => {
   );
 };
 
-Dashboard.messages = ["Settings", "Team"];
+Dashboard.messages = ["Settings", "Team", "Dashboard"];
 export default Dashboard;
 
 export async function getServerSideProps(props: GetServerSidePropsContext) {

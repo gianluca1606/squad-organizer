@@ -6,12 +6,32 @@
   "Settings": {
     "select": "test 123",
     "german": "German",
-    "english": "english"
+    "english": "english",
+    "delete": "Delete account"
   },
 
   "Team" : {
-    "balance": "Squad Balance",
-    "description": "Hier kannst du alle Strafen und Beiträge einsehen, die du bisher gezahlt hast.",
-    "filter": "Filter name/sponsor"
+    "balance": {
+      "title": "Balance",
+      "description": "Here you can see all punishments and contributions types of your squad test",
+      "filter": "Filter name/sponsor",
+      "table": {
+        "name": "Name/Sponsor",
+        "reason": "Reason",
+        "date": "Date",
+        "description": "Description",
+        "payed": "Payed",
+        "price": "Price",
+        "rows": "Rows per page",
+        "page": "Seite",
+        "of": "von",
+        "view": "View",
+        "first": "Gehe z",
+        "last": "Go to last page",
+        "previous": "Go to previous page",
+        "next": "Go to next page"
+      }
+    }
+    
   }
 }
