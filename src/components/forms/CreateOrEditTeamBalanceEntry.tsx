@@ -1,4 +1,5 @@
 import { useLocalStorage } from "@mantine/hooks";
+import { CheckedState } from "@radix-ui/react-checkbox";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Edit, Loader2, Plus } from "lucide-react";
 import { FC, useEffect, useState } from "react";
@@ -26,6 +27,7 @@ import {
 import { Textarea } from "~/components/ui/textarea";
 import { useToast } from "~/components/ui/use-toast";
 import { RouterInputs, RouterOutputs, api } from "~/utils/api";
+import { SPONSOR } from "~/utils/constants";
 import { getNameOrMail } from "~/utils/getNameOrMail";
 
 type CreateOrUpDateTeamBalanceEntry = RouterInputs["teamBalance"]["create"];
@@ -56,12 +58,15 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
   const { register, handleSubmit, setValue, reset, getValues, watch } =
     useForm<CreateOrUpDateTeamBalanceEntry>();
 
+  const [runAgain, setRunAgain] = useState(false);
+
   const createBalanceEntry = api.teamBalance.create.useMutation({
     onSuccess: (data) => {
       toast({
         title: "Balance Entry created",
       });
       reset();
+      setRunAgain(!runAgain);
       refetchBalanceEntries();
     },
   });
@@ -105,12 +110,17 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
           "name",
           punishmentsAndContributionList?.punishmentsOrContributions[0]!.name!
         );
+
+        setValue(
+          "price",
+          punishmentsAndContributionList?.punishmentsOrContributions[0]!.price!
+        );
       }
       if (allMembers && allMembers.length > 0) {
         setValue("clerkId", allMembers[0]!.id);
       }
     }
-  }, [actualTeam, punishmentsAndContributionList, allMembers]);
+  }, [actualTeam, punishmentsAndContributionList, allMembers, runAgain]);
 
   const setMemberName = (memberId: string) => {
     setValue("clerkId", memberId);
@@ -121,15 +131,26 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
   };
   const setPunishmentOrContributionName = (name: string) => {
     setValue("name", name);
-    console.log(getValues("name"));
+
+    let price = punishmentsAndContributionList?.punishmentsOrContributions.find(
+      (punishmentOrContribution) => punishmentOrContribution.name === name
+    )?.price;
+    if (!price) {
+      price = 0;
+    }
+    setValue("price", price);
+  };
+
+  const setPayedValue = (checked: CheckedState) => {
+    checked.valueOf() ? setValue("payed", "on") : setValue("payed", "off");
   };
 
   const onSubmit = (formData: CreateOrUpDateTeamBalanceEntry) => {
     if (edit) {
-      // editBalanceEntry.mutate({
-      //   ...formData,
-      //   id: data?.id,
-      // });
+      editBalanceEntry.mutate({
+        ...formData,
+        id: data?.id,
+      });
     } else {
       createBalanceEntry.mutate(formData);
     }
@@ -186,7 +207,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
             </>
           )}
 
-          {watch("entryType") === "sponsor" && (
+          {watch("entryType") === SPONSOR && (
             <>
               <Label htmlFor="sponsorname">Sponsorname</Label>
               <Input
@@ -257,7 +278,12 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
             <Label htmlFor="payed" className="mr-4">
               Payed?
             </Label>
-            <Checkbox className="border-white " {...register("payed")} />
+            <Checkbox
+              className="border-white"
+              onCheckedChange={setPayedValue}
+              {...register("payed")}
+              checked={watch("payed") === "on" ? true : false}
+            />
           </div>
         </form>
 

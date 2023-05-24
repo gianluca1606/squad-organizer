@@ -1,37 +1,42 @@
 {
+  "Dashboard": {
+    "tabs": {
+      "balance": "Bilanz",
+      "personal": "Persönlich",
+      "squad": "Team"
+    }
+  },
   "Home": {
-    "title": "Street photography",
-    "description": "Street photography captures real-life moments and human interactions in public places. It is a way to tell visual stories and freeze fleeting moments of time, turning the ordinary into the extraordinary."
+    "description": "Street photography captures real-life moments and human interactions in public places. It is a way to tell visual stories and freeze fleeting moments of time, turning the ordinary into the extraordinary.",
+    "title": "Street photography"
   },
   "Settings": {
-    "select": "test 123",
-    "german": "German",
-    "english": "english",
-    "delete": "Delete account"
+    "delete": "Delete account",
+    "english": "Englisch",
+    "german": "Deutsch",
+    "select": "test 123"
   },
-
-  "Team" : {
+  "Team": {
     "balance": {
-      "title": "Balance",
       "description": "Here you can see all punishments and contributions types of your squad test",
       "filter": "Filter name/sponsor",
       "table": {
+        "date": "Datum",
+        "description": "Beschreibung",
+        "first": "Gehe zur ersten Seite",
+        "last": "Gehe zur letyten Seite",
         "name": "Name/Sponsor",
-        "reason": "Reason",
-        "date": "Date",
-        "description": "Description",
-        "payed": "Payed",
-        "price": "Price",
-        "rows": "Rows per page",
-        "page": "Seite",
+        "next": "Gehe zur nächsten Seite",
         "of": "von",
-        "view": "View",
-        "first": "Gehe z",
-        "last": "Go to last page",
+        "page": "Seite",
+        "payed": "Bezahlt",
         "previous": "Go to previous page",
-        "next": "Go to next page"
-      }
+        "price": "Preis",
+        "reason": "Grund",
+        "rows": "Anzahl pro Seite",
+        "view": "View"
+      },
+      "title": "Bilanz"
     }
-    
   }
 }

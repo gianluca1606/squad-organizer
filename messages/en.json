@@ -1,43 +1,42 @@
 {
-    "Home": {
-      "title": "Street photography",
-      "description": "Street photography captures real-life moments and human interactions in public places. It is a way to tell visual stories and freeze fleeting moments of time, turning the ordinary into the extraordinary."
-    },
-    "Settings": {
-      "select": "test 123",
-      "german": "German",
-      "english": "english",
-      "delete": "Delete account"
-    },
-    "Dashboard": {
-      "tabs": {
-        "squad" : "Squad",
-        "balance" : "Balance",
-        "personal": "Personal"  
-      }
-    },
-    "Team" : {
-      "balance": {
-        "title": "Balance",
-        "description": "Here you can see all punishments and contributions types of your squad test",
-        "filter": "Filter name/sponsor",
-        "table": {
-          "name": "Name/Sponsor",
-          "reason": "Reason",
-          "date": "Date",
-          "description": "Description",
-          "payed": "Payed",
-          "price": "Price",
-          "rows": "Rows per page",
-          "page": "Page",
-          "of": "of",
-          "view": "View",
-          "first": "Go to first page",
-          "last": "Go to last page",
-          "previous": "Go to previous page",
-          "next": "Go to next page"
-        }
-      }
-      
+  "Dashboard": {
+    "tabs": {
+      "balance": "Balance",
+      "personal": "Personal",
+      "squad": "Squad"
+    }
+  },
+  "Home": {
+    "description": "Street photography captures real-life moments and human interactions in public places. It is a way to tell visual stories and freeze fleeting moments of time, turning the ordinary into the extraordinary.",
+    "title": "Street photography"
+  },
+  "Settings": {
+    "delete": "Delete account",
+    "english": "english",
+    "german": "German",
+    "select": "test 123"
+  },
+  "Team": {
+    "balance": {
+      "description": "Here you can see all punishments and contributions types of your squad test",
+      "filter": "Filter name/sponsor",
+      "table": {
+        "date": "Date",
+        "description": "Description",
+        "first": "Go to first page",
+        "last": "Go to last page",
+        "name": "Name/Sponsor",
+        "next": "Go to next page",
+        "of": "of",
+        "page": "Page",
+        "payed": "Payed",
+        "previous": "Go to previous page",
+        "price": "Price",
+        "reason": "Reason",
+        "rows": "Rows per page",
+        "view": "View"
+      },
+      "title": "Balance"
     }
   }
+}

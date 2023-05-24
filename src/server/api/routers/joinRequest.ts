@@ -2,7 +2,6 @@ import { User } from "@clerk/nextjs/api";
 import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { PublicUser } from "~/interfaces/PublicUser";
 
 import {
   createTRPCRouter,
@@ -64,6 +63,43 @@ export const joinRequestRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const joinRequest = await ctx.prisma.joinRequest.findFirst({
+        where: {
+          id: input.joinRequestId,
+        },
+      });
+
+      if (!joinRequest) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Join request not found",
+        });
+      }
+
+      const isUserManagerOrOwner = await AuthUtil.isUserManagerOrOwner(
+        ctx.prisma,
+        joinRequest.teamId,
+        ctx.auth.userId
+      );
+
+      const isUserSender = joinRequest.clerkId === ctx.auth.userId;
+
+      if (!isUserManagerOrOwner && !isUserSender) {
+        if (!isUserManagerOrOwner) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You are not a manager of this team",
+          });
+        }
+
+        if (!isUserSender) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You are not the sender of this join request",
+          });
+        }
+      }
+
       return await ctx.prisma.joinRequest.delete({
         where: {
           id: input.joinRequestId,

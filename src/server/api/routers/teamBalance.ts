@@ -10,6 +10,11 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { AuthUtil } from "~/utils/auth-utils";
+import {
+  EXPENSES,
+  PUNISHMENT_OR_CONTRIBUTION,
+  SPONSOR,
+} from "~/utils/constants";
 import { getNameOrMail } from "~/utils/getNameOrMail";
 
 export const teamBalanceRouter = createTRPCRouter({
@@ -32,56 +37,37 @@ export const teamBalanceRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const isUserManager = await AuthUtil.isUserManager(
+      const isUserManagerOrOwner = await AuthUtil.isUserManagerOrOwner(
         ctx.prisma,
         input.teamId,
         ctx.auth.userId
       );
 
-      const isUserOwner = await AuthUtil.isUserOwner(
-        ctx.prisma,
-        input.teamId,
-        ctx.auth.userId
-      );
-
-      const canEditPunishmentsOrContributions = !!(
-        isUserOwner || isUserManager
-      );
+      const canEditPunishmentsOrContributions = isUserManagerOrOwner;
 
       if (!canEditPunishmentsOrContributions)
         throw new TRPCError({ code: "FORBIDDEN" });
       let result: TeamBalance | null = null;
-      if (input.entryType === "sponsor") {
+      if (
+        input.entryType === SPONSOR ||
+        input.entryType === PUNISHMENT_OR_CONTRIBUTION
+      ) {
         result = await ctx.prisma.teamBalance.create({
           data: {
-            name: "sponsor",
+            name: input.name ? input.name : "sponsor",
             description: input.description,
             entryType: input.entryType,
             price: input.price ? Math.abs(input.price!) : undefined,
             teamId: input.teamId,
             sponsorName: input.sponsorName,
+            clerkId: input.clerkId,
             payed: input.payed,
             id: input.id,
           },
         });
         return result;
       }
-      if (input.entryType === "punishmentOrContribution") {
-        result = await ctx.prisma.teamBalance.create({
-          data: {
-            name: input.name,
-            description: input.description,
-            entryType: input.entryType,
-            price: input.price ? Math.abs(input.price!) : undefined,
-            teamId: input.teamId,
-            clerkId: input.clerkId,
-            payed: input.payed,
-            id: input.id,
-          },
-        });
-      }
-
-      if (input.entryType === "expenses") {
+      if (input.entryType === EXPENSES) {
         result = await ctx.prisma.teamBalance.create({
           data: {
             name: "expenses",
@@ -133,27 +119,76 @@ export const teamBalanceRouter = createTRPCRouter({
         },
       });
     }),
-  // TODO
   update: protectedProcedure
     .input(
       z.object({
+        id: z.string().optional(),
         name: z.string(),
-        description: z.string().optional(),
+        description: z.string(),
+        sponsorName: z.string().optional(),
         price: z.number().optional(),
-        punishmentOrContributionId: z.string(),
+        entryType: z.string(),
+        teamId: z.string(),
+        clerkId: z.string(),
+        payed: z.string().transform((value) => {
+          if (value === "on") return true;
+          if (value === "off") return false;
+          return false;
+        }),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.punishmentOrContributionType.update({
-        data: {
-          name: input.name,
-          description: input.description,
-          price: input.price,
-        },
-        where: {
-          id: input.punishmentOrContributionId,
-        },
-      });
+      const isUserManagerOrOwner = await AuthUtil.isUserManagerOrOwner(
+        ctx.prisma,
+        input.teamId,
+        ctx.auth.userId
+      );
+
+      if (!isUserManagerOrOwner) throw new TRPCError({ code: "FORBIDDEN" });
+
+      let result: TeamBalance | null = null;
+
+      if (
+        input.entryType === SPONSOR ||
+        input.entryType === PUNISHMENT_OR_CONTRIBUTION
+      ) {
+        result = await ctx.prisma.teamBalance.update({
+          data: {
+            name: input.name ? input.name : SPONSOR,
+            description: input.description,
+            entryType: input.entryType,
+            price: input.price ? Math.abs(input.price!) : undefined,
+            teamId: input.teamId,
+            sponsorName: input.sponsorName,
+            clerkId: input.clerkId,
+            payed: input.payed,
+            id: input.id,
+          },
+          where: {
+            id: input.id,
+          },
+        });
+        return result;
+      }
+      if (input.entryType === EXPENSES) {
+        result = await ctx.prisma.teamBalance.update({
+          data: {
+            name: EXPENSES,
+            description: input.description,
+            entryType: input.entryType,
+            price: -Math.abs(input.price!),
+            teamId: input.teamId,
+            payed: input.payed,
+            clerkId: input.clerkId,
+            id: input.id,
+          },
+          where: {
+            id: input.id,
+          },
+        });
+      }
+
+      return result;
     }),
 
   getAllForTeam: protectedProcedure
@@ -211,8 +246,8 @@ export const teamBalanceRouter = createTRPCRouter({
 
       return {
         listWithClerks,
-        isUserManager: !!isUserManager,
-        isUserOwner: !!isUserOwner,
+        isUserManager: isUserManager,
+        isUserOwner: isUserOwner,
       };
     }),
 });
