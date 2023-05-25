@@ -19,17 +19,23 @@ export const statisticsRouter = createTRPCRouter({
             });
 
             // sum up all entries
-            const total = teamBalanceEntries.reduce((acc, curr) => {
+            const actualBalance = teamBalanceEntries.reduce((acc, curr) => {
                 if (curr.price) {
                     return acc + curr.price;
                 }
                 return acc;
             }, 0);
 
-            // now sum up the payed entries
-            const payed = teamBalanceEntries.reduce((acc, curr) => {
-                if (curr.payed && curr.price) {
+            const allNotPayedEntriesValue = teamBalanceEntries.reduce((acc, curr) => {
+                if (curr.price && curr.price > 0 && !curr.payed) {
                     return acc + curr.price;
+                }
+                return acc;
+            }, 0);
+
+            const totalVolume = teamBalanceEntries.reduce((acc, curr) => {
+                if (curr.price) {
+                    return acc + Math.abs(curr.price);
                 }
                 return acc;
             }, 0);
@@ -46,9 +52,10 @@ export const statisticsRouter = createTRPCRouter({
             });
 
             return {
-                totalRevenue: total,
-                payedRevenue: payed,
+                actualBalance,
+                allNotPayedEntriesValue,
                 highestSponsorEntry,
+                totalVolume,
             };
         }),
 });

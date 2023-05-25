@@ -35,7 +35,7 @@ const Statistics = () => {
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
                         <div className="flex flex-row items-center justify-between space-y-0 p-6 pb-2">
-                            <h3 className="text-sm font-medium tracking-tight">Total Revenue</h3>
+                            <h3 className="text-sm font-medium tracking-tight">akt. Kontostand</h3>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width={24}
@@ -52,12 +52,12 @@ const Statistics = () => {
                             </svg>
                         </div>
                         <div className="p-6 pt-0">
-                            <div className="text-2xl font-bold">{statisticsQueryResult.data?.totalRevenue}€</div>
+                            <div className="text-2xl font-bold">{statisticsQueryResult.data?.actualBalance}€</div>
                         </div>
                     </div>
                     <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
                         <div className="flex flex-row items-center justify-between space-y-0 p-6 pb-2">
-                            <h3 className="text-sm font-medium tracking-tight">Subscriptions</h3>
+                            <h3 className="text-sm font-medium tracking-tight">offene Posten</h3>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width={24}
@@ -76,7 +76,9 @@ const Statistics = () => {
                             </svg>
                         </div>
                         <div className="p-6 pt-0">
-                            <div className="text-2xl font-bold">{statisticsQueryResult.data?.payedRevenue}€</div>
+                            <div className="text-2xl font-bold">
+                                {statisticsQueryResult.data?.allNotPayedEntriesValue}€
+                            </div>
                         </div>
                     </div>
                     <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
@@ -108,7 +110,7 @@ const Statistics = () => {
                     </div>
                     <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
                         <div className="flex flex-row items-center justify-between space-y-0 p-6 pb-2">
-                            <h3 className="text-sm font-medium tracking-tight">Highest Sponsor payment</h3>
+                            <h3 className="text-sm font-medium tracking-tight">Totaler umsatz</h3>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width={24}
@@ -124,7 +126,7 @@ const Statistics = () => {
                             </svg>
                         </div>
                         <div className="p-6 pt-0">
-                            <div className="text-2xl font-bold">+573</div>
+                            <div className="text-2xl font-bold">{statisticsQueryResult.data?.totalVolume} €</div>
                         </div>
                     </div>
                 </div>

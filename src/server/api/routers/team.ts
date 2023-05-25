@@ -7,7 +7,7 @@ import { PublicUser } from '~/interfaces/PublicUser';
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '~/server/api/trpc';
 import { AuthUtil } from '~/utils/auth-utils';
-import { OWNER } from '~/utils/constants';
+import { OWNER, PUNISHMENT_OR_CONTRIBUTION } from '~/utils/constants';
 
 export const teamRouter = createTRPCRouter({
     create: protectedProcedure
@@ -179,6 +179,27 @@ export const teamRouter = createTRPCRouter({
 
                 const isUserOwner = await AuthUtil.isUserOwner(ctx.prisma, input.teamId, member.id);
 
+                const totalMoneySpentArr = await ctx.prisma.teamBalance.findMany({
+                    where: {
+                        teamId: input.teamId,
+                        clerkId: member.id,
+                        entryType: PUNISHMENT_OR_CONTRIBUTION,
+                        payed: true,
+                        price: {
+                            gt: 0,
+                        },
+                    },
+                    select: {
+                        price: true,
+                    },
+                });
+
+                const totalMoneySpent = totalMoneySpentArr.reduce((acc, curr) => {
+                    if (curr.price) {
+                        return acc + curr.price;
+                    }
+                    return acc;
+                }, 0);
                 return {
                     id: member.id,
                     createdAt: member.createdAt,
@@ -193,6 +214,7 @@ export const teamRouter = createTRPCRouter({
                     primaryEmailAddressId: member.primaryEmailAddressId,
                     isManager: isUserManager,
                     isOwner: isUserOwner,
+                    totalMoneySpent,
                 };
             })
         );

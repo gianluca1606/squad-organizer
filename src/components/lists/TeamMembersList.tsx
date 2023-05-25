@@ -1,22 +1,13 @@
 import { useLocalStorage } from '@mantine/hooks';
 import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useDebounce } from 'usehooks-ts';
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Badge } from '~/components/ui/badge';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '~/components/ui/hover-card';
 import { PublicUser } from '~/interfaces/PublicUser';
 import { api } from '~/utils/api';
 import { getNameOrMail } from '~/utils/getNameOrMail';
+import UserListDropDown from '../UserListDropDown';
 import { SkeletonList } from './SkeletonList';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { Button } from '~/components/ui/button';
 
 const TeamMembersList: FC = () => {
     const [actualTeam, setActualTeamFunction] = useLocalStorage({
@@ -104,20 +95,7 @@ const TeamMembersList: FC = () => {
                             <li className="py-3 sm:py-4" key={member.id}>
                                 <div className="flex items-center justify-between">
                                     <div className="flex min-w-0 items-center">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger>
-                                                <Avatar>
-                                                    <AvatarImage src={member.profileImageUrl} alt="@shadcn" />
-                                                    <AvatarFallback>CN</AvatarFallback>
-                                                </Avatar>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuLabel>Team Member Actions</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Remove from team</DropdownMenuItem>
-                                                <DropdownMenuItem>Turn into admin</DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        <UserListDropDown member={member} />
 
                                         <div className="ml-3">
                                             <div className="truncate font-medium text-gray-900 dark:text-white">
@@ -136,7 +114,7 @@ const TeamMembersList: FC = () => {
                                         </div>
                                     </div>
                                     <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                        €445,467
+                                        {member.totalMoneySpent} €
                                     </div>
                                 </div>
                             </li>

@@ -1,10 +1,20 @@
 import { clerkClient } from '@clerk/nextjs/server';
+import { PrismaClient } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '~/server/api/trpc';
 import { AuthUtil } from '~/utils/auth-utils';
 import { OWNER } from '~/utils/constants';
+
+const removeRoles = async (prismaClient: PrismaClient, teamId: string, clerkId: string) => {
+    return await prismaClient.role.deleteMany({
+        where: {
+            teamId,
+            clerkId,
+        },
+    });
+};
 
 export const userRouter = createTRPCRouter({
     delete: protectedProcedure.mutation(async ({ ctx }) => {
@@ -45,6 +55,8 @@ export const userRouter = createTRPCRouter({
                 });
             }
 
+            // remove all roles
+            await removeRoles(ctx.prisma, input.teamId, input.clerkId);
             return await ctx.prisma.role.create({
                 data: {
                     teamId: input.teamId,
@@ -91,6 +103,8 @@ export const userRouter = createTRPCRouter({
                 });
             }
 
+            // remove all roles
+            await removeRoles(ctx.prisma, input.teamId, input.clerkId);
             // turn user into manager
             await ctx.prisma.role.create({
                 data: {
@@ -129,6 +143,9 @@ export const userRouter = createTRPCRouter({
                     message: 'You are not a manager or owner',
                 });
             }
+
+            // remove roles from this user and team
+            await removeRoles(ctx.prisma, input.teamId, input.clerkId);
 
             return await ctx.prisma.teamMember.delete({
                 where: {
