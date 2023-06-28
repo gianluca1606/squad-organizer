@@ -8,9 +8,11 @@ import {
     VisibilityState,
     flexRender,
     getCoreRowModel,
+    getFacetedRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
+    getFacetedUniqueValues,
     useReactTable,
 } from '@tanstack/react-table';
 
@@ -90,7 +92,7 @@ const Transactions: FC = () => {
         {
             accessorKey: 'name',
             header: ({ column }) => <DataTableColumnHeader column={column} title="Reason" />,
-            cell: ({ row }) => <div className="w-[80px]">{row.getValue('name')}</div>,
+            cell: ({ row }) => <div className="w-[80px] overflow-hidden text-ellipsis">{row.getValue('name')}</div>,
         },
         {
             accessorKey: 'description',
@@ -161,6 +163,8 @@ const Transactions: FC = () => {
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getFacetedRowModel: getFacetedRowModel(),
+        getFacetedUniqueValues: getFacetedUniqueValues(),
     });
 
     useEffect(() => {

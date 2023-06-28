@@ -17,9 +17,6 @@ const removeRoles = async (prismaClient: PrismaClient, teamId: string, clerkId: 
 };
 
 export const userRouter = createTRPCRouter({
-    delete: protectedProcedure.mutation(async ({ ctx }) => {
-        await clerkClient.users.deleteUser(ctx.auth.userId);
-    }),
     turnUserIntoOwner: protectedProcedure
         .input(
             z.object({

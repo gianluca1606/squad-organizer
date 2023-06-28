@@ -29,6 +29,7 @@ const TeamMembersList: FC = () => {
     useEffect(() => {
         if (teamMembers.data) {
             setListData(teamMembers.data);
+            searchValue && setSearchValue('');
         }
     }, [teamMembers.data]);
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

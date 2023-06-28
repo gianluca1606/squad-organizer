@@ -6,6 +6,25 @@ interface Props {
     children?: ReactNode;
 }
 
+const pages = [
+    {
+        title: 'About',
+        href: '/about',
+    },
+    {
+        title: 'Privacy Policy',
+        href: '/privacy-policy',
+    },
+    {
+        title: 'Terms of Service',
+        href: '/terms-of-service',
+    },
+    {
+        title: 'Contact',
+        href: '/contact',
+    },
+];
+
 const Footer: FC = ({ children }: Props) => {
     const { systemTheme, theme, setTheme } = useTheme();
     const currentTheme = theme === 'system' ? systemTheme : theme;
@@ -33,26 +52,13 @@ const Footer: FC = ({ children }: Props) => {
                             />
                         </a>
                         <ul className="mb-6 flex flex-wrap items-center text-sm font-medium text-gray-500 dark:text-gray-400 sm:mb-0">
-                            <li>
-                                <Link className="mr-4 hover:underline md:mr-6" href="/about">
-                                    About
-                                </Link>
-                            </li>
-                            <li>
-                                <a href="#" className="mr-4 hover:underline md:mr-6">
-                                    Privacy Policy
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className="mr-4 hover:underline md:mr-6 ">
-                                    Wishlist
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:underline">
-                                    Contact
-                                </a>
-                            </li>
+                            {pages.map((page) => (
+                                <li key={page.href}>
+                                    <Link href={page.href} className="mr-4 cursor-pointer hover:underline md:mr-6">
+                                        {page.title}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                     <hr className="my-6 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-8" />

@@ -20,7 +20,7 @@ export const statisticsRouter = createTRPCRouter({
 
             // sum up all entries
             const actualBalance = teamBalanceEntries.reduce((acc, curr) => {
-                if (curr.price) {
+                if (curr.price && curr.payed) {
                     return acc + curr.price;
                 }
                 return acc;

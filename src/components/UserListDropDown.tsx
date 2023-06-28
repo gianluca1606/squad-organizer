@@ -9,10 +9,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
+import { useToast } from '~/components/ui/use-toast';
 import { PublicUser } from '~/interfaces/PublicUser';
 import { api } from '~/utils/api';
 
 const UserListDropDown = (props: { member: PublicUser }) => {
+    const { toast } = useToast();
     const [actualTeam, setActualTeamFunction] = useLocalStorage({
         defaultValue: '',
         key: 'teamId',
@@ -21,15 +23,24 @@ const UserListDropDown = (props: { member: PublicUser }) => {
     const turnUserIntoManager = api.user.turnUserIntoManager.useMutation({
         onSuccess: () => {
             teamMembers.refetch();
+            toast({
+                title: 'User turned into manager',
+            });
         },
     });
     const turnUserIntoOwner = api.user.turnUserIntoOwner.useMutation({
         onSuccess: () => {
+            toast({
+                title: 'User turned into owner',
+            });
             teamMembers.refetch();
         },
     });
     const removeUserFromTeam = api.user.removeFromTeam.useMutation({
         onSuccess: () => {
+            toast({
+                title: 'User removed from team',
+            });
             teamMembers.refetch();
         },
     });
