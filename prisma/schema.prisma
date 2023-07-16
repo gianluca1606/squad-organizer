@@ -22,8 +22,8 @@ model Team {
     teamMember                   TeamMember[]
     punishmentOrContributionType PunishmentOrContributionType[]
     role                         Role[]
-    AppointmentDays              Appointment[]
-    AppointmentParticipation     AppointmentParticipation[]
+    appointmentDays              Appointment[]
+    appointmentParticipation     AppointmentParticipation[]
 }
 
 model TeamMember {
