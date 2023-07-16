@@ -1,6 +1,7 @@
 {
   "Dashboard": {
     "tabs": {
+      "appointments": "Appointments",
       "balance": "Balance",
       "personal": "Personal",
       "squad": "Squad"

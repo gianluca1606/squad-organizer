@@ -73,7 +73,7 @@ export const Team = () => {
                 <CardHeader>
                     {actualTeam ? (
                         <>
-                            <CardTitle> {teamData.data?.name}</CardTitle>
+                            <CardTitle className="mt-4 md:mt-0"> {teamData.data?.name}</CardTitle>
                             <CardDescription>{teamData.data?.description}</CardDescription>
                         </>
                     ) : (

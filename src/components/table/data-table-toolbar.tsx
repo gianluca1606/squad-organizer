@@ -80,8 +80,8 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
     }, [value]);
 
     return (
-        <div className="flex items-center justify-between">
-            <div className="flex flex-1 items-center space-x-2">
+        <div className="flax-wrap flex items-center justify-between">
+            <div className="flex flex-1 flex-wrap items-center md:space-x-2">
                 {nameOrSponsors.length > 0 && (
                     <Popover open={openNameOrSponsor} onOpenChange={setOpenNameOrSponsorFilter}>
                         <PopoverTrigger asChild>
@@ -89,14 +89,14 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
                                 variant="outline"
                                 role="combobox"
                                 aria-expanded={open}
-                                className="w-[200px] justify-between">
+                                className="w-full justify-between md:w-[200px]">
                                 {valueName
                                     ? nameOrSponsors.find((nameOrSponsor) => nameOrSponsor.value === valueName)?.label
                                     : 'Name filter...'}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[200px] p-0">
+                        <PopoverContent className="w-full p-0 md:w-[200px]">
                             <Command>
                                 <CommandInput placeholder="Name filter..." />
                                 <CommandEmpty>No options found.</CommandEmpty>
@@ -128,14 +128,14 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
                             variant="outline"
                             role="combobox"
                             aria-expanded={open}
-                            className="w-[200px] justify-between">
+                            className="w-full justify-between md:w-[200px]">
                             {value
                                 ? frameworks.find((framework) => framework.value === value)?.label
                                 : 'Status filter...'}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
+                    <PopoverContent className="w-full p-0 md:w-[200px]">
                         <Command>
                             <CommandInput placeholder="Status filter..." />
                             <CommandEmpty>No options found.</CommandEmpty>
@@ -159,8 +159,8 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
                         </Command>
                     </PopoverContent>
                 </Popover>
+                <DataTableViewOptions table={table} />
             </div>
-            <DataTableViewOptions table={table} />
         </div>
     );
 }

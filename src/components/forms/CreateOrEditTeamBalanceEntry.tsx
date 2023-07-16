@@ -46,7 +46,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
         defaultValue: '',
         key: 'teamId',
     });
-    const statisticsQueryResult = api.statistics.get.useQuery(
+    const statisticsQueryResult = api.statistic.get.useQuery(
         {
             teamId: actualTeam,
         },

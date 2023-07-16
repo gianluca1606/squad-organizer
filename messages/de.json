@@ -1,6 +1,7 @@
 {
   "Dashboard": {
     "tabs": {
+      "appointments": "Termine",
       "balance": "Bilanz",
       "personal": "Persönlich",
       "squad": "Team"

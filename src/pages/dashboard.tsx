@@ -8,6 +8,7 @@ import { Team } from '~/components/tabs/Team';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { pick } from 'lodash';
 import { useTranslations } from 'next-intl';
+import { Appointments } from '~/components/tabs/Appointments';
 
 export type NextPageWithMessages<P = {}, IP = P> = NextPage<P, IP> & {
     messages: string[];
@@ -28,9 +29,10 @@ const Dashboard: NextPageWithMessages = () => {
                 </div>
                 <Tabs defaultValue="transactions">
                     <div className="flex w-full justify-center">
-                        <TabsList className="grid w-full grid-cols-3 sm:w-full xl:w-10/12 2xl:w-8/12">
+                        <TabsList className="grid w-full grid-cols-4 sm:w-full xl:w-10/12 2xl:w-8/12">
                             <TabsTrigger value="transactions">{t('tabs.balance')}</TabsTrigger>
                             <TabsTrigger value="team">{t('tabs.squad')}</TabsTrigger>
+                            <TabsTrigger value="appointments">{t('tabs.appointments')}</TabsTrigger>
                             <TabsTrigger value="personal">{t('tabs.personal')}</TabsTrigger>
                         </TabsList>
                     </div>
@@ -41,7 +43,9 @@ const Dashboard: NextPageWithMessages = () => {
                     <TabsContent value="team">
                         <Team></Team>
                     </TabsContent>
-
+                    <TabsContent value="appointments">
+                        <Appointments />
+                    </TabsContent>
                     <TabsContent value="personal">
                         <Personal />
                     </TabsContent>

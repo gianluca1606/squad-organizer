@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { SPONSOR } from '~/utils/constants';
 
-export const statisticsRouter = createTRPCRouter({
+export const statisticRouter = createTRPCRouter({
     get: protectedProcedure
         .input(
             z.object({

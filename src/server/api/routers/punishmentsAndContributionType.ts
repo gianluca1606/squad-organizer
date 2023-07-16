@@ -41,7 +41,7 @@ export const punishmentOrContributionTypeRouter = createTRPCRouter({
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const isUserManager = await AuthUtil.isUserManager(ctx.prisma, input.teamId, ctx.auth.userId);
+            const isUserManager = await AuthUtil.isUserManagerOrOwner(ctx.prisma, input.teamId, ctx.auth.userId);
 
             if (!isUserManager) throw new TRPCError({ code: 'FORBIDDEN' });
             return await ctx.prisma.punishmentOrContributionType.delete({
