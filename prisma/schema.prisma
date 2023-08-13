@@ -49,15 +49,24 @@ model Role {
 }
 
 model Appointment {
-    id        String    @id @default(cuid())
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    canceled  Boolean   @default(false)
-    date      DateTime?
-    time      String
-    type      String
-    team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
-    teamId    String
+    id                  String                @id @default(cuid())
+    createdAt           DateTime              @default(now())
+    updatedAt           DateTime              @updatedAt
+    deleted             Boolean               @default(false) // Soft deletion flag
+    date                DateTime?
+    time                String
+    type                String
+    team                Team                  @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId              String
+    canceledAppointment CanceledAppointment[]
+}
+
+model CanceledAppointment {
+    id            String                @id @default(cuid())
+    appointment   Appointment @relation(fields: [appointmentId], references: [id])
+    appointmentId String
+    canceledOn    DateTime    @default(now())
+    clerkId       String
 }
 
 model AppointmentParticipation {

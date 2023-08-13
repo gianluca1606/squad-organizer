@@ -1,4 +1,4 @@
-import { PublicUser } from "~/interfaces/PublicUser";
+import { PublicUser } from "@/interfaces/PublicUser";
 
 export function getNameOrMail(member: PublicUser | null) {
   if (!member) {

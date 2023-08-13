@@ -1,10 +1,10 @@
-import { createTRPCRouter } from '~/server/api/trpc';
-import { teamRouter } from './routers/team';
-import { userRouter } from './routers/user';
-import { joinRequestRouter } from './routers/joinRequest';
-import { punishmentOrContributionTypeRouter } from './routers/punishmentsAndContributionType';
-import { teamBalanceRouter } from './routers/teamBalance';
-import { statisticRouter } from './routers/statistics';
+import { createTRPCRouter } from '@/server/api/trpc';
+import { teamRouter } from '@/server/api/routers/team';
+import { userRouter } from '@/server/api//routers/user';
+import { joinRequestRouter } from '@/server/api//routers/joinRequest';
+import { punishmentOrContributionTypeRouter } from '@/server/api//routers/punishmentsAndContributionType';
+import { teamBalanceRouter } from '@/server/api//routers/teamBalance';
+import { statisticRouter } from '@/server/api//routers/statistics';
 
 /**
  * This is the primary router for your server.

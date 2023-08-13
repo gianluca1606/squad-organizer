@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { api } from '~/utils/api';
+import { api } from '@/utils/api';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/router';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
-import { Button } from '~/components/ui/button';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 
 export function NavBar() {
     const [mounted, setMounted] = useState(false);

@@ -7,8 +7,8 @@ import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
-} from "~/server/api/trpc";
-import { AuthUtil } from "~/utils/auth-utils";
+} from "@/server/api/trpc";
+import { AuthUtil } from "@/utils/auth-utils";
 
 export const joinRequestRouter = createTRPCRouter({
   create: protectedProcedure

@@ -1,6 +1,6 @@
 import { useLocalStorage } from '@mantine/hooks';
 import { UserMinus, ShieldCheck, Key } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -8,10 +8,10 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { useToast } from '~/components/ui/use-toast';
-import { PublicUser } from '~/interfaces/PublicUser';
-import { api } from '~/utils/api';
+} from '@/components/ui/dropdown-menu';
+import { useToast } from '@/components/ui/use-toast';
+import { PublicUser } from '@/interfaces/PublicUser';
+import { api } from '@/utils/api';
 
 const UserListDropDown = (props: { member: PublicUser }) => {
     const { toast } = useToast();
@@ -81,7 +81,7 @@ const UserListDropDown = (props: { member: PublicUser }) => {
                 </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-                <DropdownMenuLabel>Team Member Actions</DropdownMenuLabel>
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                     onClick={() => {

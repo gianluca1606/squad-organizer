@@ -4,8 +4,8 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { Edit, Loader2, Plus } from 'lucide-react';
 import { FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button } from '~/components/ui/button';
-import { Checkbox } from '~/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogContent,
@@ -14,15 +14,15 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '~/components/ui/dialog';
-import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
-import { Textarea } from '~/components/ui/textarea';
-import { useToast } from '~/components/ui/use-toast';
-import { RouterInputs, RouterOutputs, api } from '~/utils/api';
-import { SPONSOR } from '~/utils/constants';
-import { getNameOrMail } from '~/utils/getNameOrMail';
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast';
+import { RouterInputs, RouterOutputs, api } from '@/utils/api';
+import { SPONSOR } from '@/utils/constants';
+import { getNameOrMail } from '@/utils/getNameOrMail';
 
 type CreateOrUpDateTeamBalanceEntry = RouterInputs['teamBalance']['create'];
 type UpdateTeamBalanceEntry = RouterOutputs['teamBalance']['getAllForTeam']['listWithClerks']['0'];
@@ -267,7 +267,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
                 <DialogFooter>
                     <DialogClose asChild>
                         <Button
-                            variant={'outline'}
+                            
                             disabled={createBalanceEntry.isLoading || editBalanceEntry.isLoading}
                             onClick={save}>
                             {createBalanceEntry.isLoading || editBalanceEntry.isLoading ? (

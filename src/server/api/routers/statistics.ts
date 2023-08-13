@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
-import { SPONSOR } from '~/utils/constants';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
+import { SPONSOR } from '@/utils/constants';
 
 export const statisticRouter = createTRPCRouter({
     get: protectedProcedure

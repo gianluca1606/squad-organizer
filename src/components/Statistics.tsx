@@ -1,9 +1,9 @@
 import { useLocalStorage } from '@mantine/hooks';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '~/components/ui/card';
-import { useToast } from '~/components/ui/use-toast';
-import { api } from '~/utils/api';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { useToast } from '@/components/ui/use-toast';
+import { api } from '@/utils/api';
 
 const Statistics = () => {
     const t = useTranslations('Team');
@@ -101,7 +101,7 @@ const Statistics = () => {
                         </div>
                         <div className="p-6 pt-0">
                             <div className="text-2xl font-bold">
-                                {statisticsQueryResult.data?.highestSponsorEntry?.price}€
+                                {statisticsQueryResult.data?.highestSponsorEntry?.price ?? 0}€
                             </div>
                             <p className="text-xs text-muted-foreground">
                                 {statisticsQueryResult.data?.highestSponsorEntry?.sponsorName}

@@ -1,7 +1,7 @@
+import { useLocalStorage } from "@mantine/hooks";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/router";
 import { FC } from "react";
-import { useLocalStorage } from "usehooks-ts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,17 +12,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
-import { Button } from "~/components/ui/button";
-import { useToast } from "~/components/ui/use-toast";
-import { api } from "~/utils/api";
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { api } from "@/utils/api";
 type Props = {
   punishmentOrContributionId: string;
 };
 export const DeleteContributionOrPunishmentType: FC<Props> = ({
   punishmentOrContributionId,
 }) => {
-  const [actualTeam, setActualTeamFunction] = useLocalStorage("teamId", "");
+    const [actualTeam, setActualTeamFunction] = useLocalStorage({
+        defaultValue: '',
+        key: 'teamId',
+    });
   const punishmentsAndContributionList =
     api.team.getAllContributionsAndPunishmentsForTeam.useQuery(
       {

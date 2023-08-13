@@ -3,9 +3,9 @@ import { PrismaClient } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from '~/server/api/trpc';
-import { AuthUtil } from '~/utils/auth-utils';
-import { OWNER } from '~/utils/constants';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/api/trpc';
+import { AuthUtil } from '@/utils/auth-utils';
+import { OWNER } from '@/utils/constants';
 
 const removeRoles = async (prismaClient: PrismaClient, teamId: string, clerkId: string) => {
     return await prismaClient.role.deleteMany({

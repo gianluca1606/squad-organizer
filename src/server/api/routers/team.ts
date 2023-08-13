@@ -2,12 +2,12 @@ import { User } from '@clerk/nextjs/api';
 import { clerkClient } from '@clerk/nextjs/server';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { TeamDataWithAlreadyInTeam } from '~/interfaces/CreateEditTeamProps';
-import { PublicUser } from '~/interfaces/PublicUser';
+import { TeamDataWithAlreadyInTeam } from '@/interfaces/CreateEditTeamProps';
+import { PublicUser } from '@/interfaces/PublicUser';
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from '~/server/api/trpc';
-import { AuthUtil } from '~/utils/auth-utils';
-import { OWNER, PUNISHMENT_OR_CONTRIBUTION } from '~/utils/constants';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/api/trpc';
+import { AuthUtil } from '@/utils/auth-utils';
+import { OWNER, PUNISHMENT_OR_CONTRIBUTION } from '@/utils/constants';
 
 export const teamRouter = createTRPCRouter({
     create: protectedProcedure

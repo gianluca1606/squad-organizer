@@ -6,8 +6,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/components/ui/select";
-import { api } from "~/utils/api";
+} from "@/components/ui/select";
+import { api } from "@/utils/api";
 
 export const SelectTeamComponent = () => {
   const teams = api.team.getTeamsForLoggedInUser.useQuery(undefined, {

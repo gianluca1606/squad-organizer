@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useToast } from '~/components/ui/use-toast';
-import { api } from '~/utils/api';
+import { useToast } from '@/components/ui/use-toast';
+import { api } from '@/utils/api';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '~/components/ui/card';
-import { getNameOrMail } from '~/utils/getNameOrMail';
-import { Button } from '~/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { getNameOrMail } from '@/utils/getNameOrMail';
+import { Button } from '@/components/ui/button';
 import { Check, X } from 'lucide-react';
 import { useLocalStorage } from '@mantine/hooks';
 

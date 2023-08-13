@@ -1,14 +1,14 @@
 import { GetServerSidePropsContext, type NextPage } from 'next';
 import Head from 'next/head';
-import Transactions from '~/components/tabs/Transactions';
+import Transactions from '@/components/tabs/Transactions';
 
-import { SelectTeamComponent } from '~/components/control/SelectTeamComponent';
-import { Personal } from '~/components/tabs/Personal';
-import { Team } from '~/components/tabs/Team';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
+import { SelectTeamComponent } from '@/components/control/SelectTeamComponent';
+import { Personal } from '@/components/tabs/Personal';
+import { Team } from '@/components/tabs/Team';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { pick } from 'lodash';
 import { useTranslations } from 'next-intl';
-import { Appointments } from '~/components/tabs/Appointments';
+import { Appointments } from '@/components/tabs/Appointments';
 
 export type NextPageWithMessages<P = {}, IP = P> = NextPage<P, IP> & {
     messages: string[];

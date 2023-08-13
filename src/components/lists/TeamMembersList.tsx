@@ -1,11 +1,11 @@
 import { useLocalStorage } from '@mantine/hooks';
 import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useDebounce } from 'usehooks-ts';
-import { Badge } from '~/components/ui/badge';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '~/components/ui/hover-card';
-import { PublicUser } from '~/interfaces/PublicUser';
-import { api } from '~/utils/api';
-import { getNameOrMail } from '~/utils/getNameOrMail';
+import { Badge } from '@/components/ui/badge';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { PublicUser } from '@/interfaces/PublicUser';
+import { api } from '@/utils/api';
+import { getNameOrMail } from '@/utils/getNameOrMail';
 import UserListDropDown from '../UserListDropDown';
 import { SkeletonList } from './SkeletonList';
 

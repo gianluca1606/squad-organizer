@@ -10,10 +10,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
-import { Button } from "~/components/ui/button";
-import { useToast } from "~/components/ui/use-toast";
-import { api } from "~/utils/api";
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { api } from "@/utils/api";
 
 export const DeleteBalanceEntryDialog = ({
   teamBalanceEntryId,

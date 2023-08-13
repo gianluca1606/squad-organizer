@@ -3,7 +3,7 @@ import Head from 'next/head';
 import pick from 'lodash/pick';
 import Image from 'next/image';
 
-import { api } from '~/utils/api';
+import { api } from '@/utils/api';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 

@@ -16,7 +16,7 @@
  */
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
-import { prisma } from "~/server/db";
+import { prisma } from "@/server/db";
 import { getAuth } from "@clerk/nextjs/server";
 import type {
   SignedInAuthObject,

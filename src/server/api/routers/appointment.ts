@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
-import { AuthUtil } from '~/utils/auth-utils';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
+import { AuthUtil } from '@/utils/auth-utils';
 
 export const appointmentRouter = createTRPCRouter({
     createTraining: protectedProcedure

@@ -3,7 +3,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { Edit, Loader2, Plus } from "lucide-react";
 import { FC, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "~/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,13 +12,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import { Textarea } from "~/components/ui/textarea";
-import { useToast } from "~/components/ui/use-toast";
-import { CreateEditPusnihmentOrContributionTypeProps } from "~/interfaces/CreateEditPunishmentOrContributionTypeProps";
-import { RouterInputs, api } from "~/utils/api";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import { CreateEditPusnihmentOrContributionTypeProps } from "@/interfaces/CreateEditPunishmentOrContributionTypeProps";
+import { RouterInputs, api } from "@/utils/api";
 
 type CreatePusnihmentOrContributionTypeInput =
   RouterInputs["punishmentOrContributionType"]["create"];

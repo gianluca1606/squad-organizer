@@ -3,7 +3,7 @@
 import { Row } from "@tanstack/react-table";
 import { Copy, MoreHorizontal, Pen, Star, Tags, Trash } from "lucide-react";
 
-import { Button } from "~/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,10 +16,10 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 import { z } from "zod";
-import { RouterOutputs } from "~/utils/api";
+import { RouterOutputs } from "@/utils/api";
 import { CreateOrEditTeamBalanceEntry } from "../forms/CreateOrEditTeamBalanceEntry";
 import { DeleteBalanceEntryDialog } from "../forms/DeleteBalanceEntryDialog";
 

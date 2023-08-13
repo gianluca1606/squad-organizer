@@ -1,5 +1,5 @@
 import { Team } from "@prisma/client";
-import { RouterOutputs } from "~/utils/api";
+import { RouterOutputs } from "@/utils/api";
 
 type GetTeamData = RouterOutputs["team"]["getTeamData"];
 export type CreateEditTeamProps = {

@@ -2,20 +2,20 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { TeamBalance } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { PublicUser } from "~/interfaces/PublicUser";
+import { PublicUser } from "@/interfaces/PublicUser";
 
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
-} from "~/server/api/trpc";
-import { AuthUtil } from "~/utils/auth-utils";
+} from "@/server/api/trpc";
+import { AuthUtil } from "@/utils/auth-utils";
 import {
   EXPENSES,
   PUNISHMENT_OR_CONTRIBUTION,
   SPONSOR,
-} from "~/utils/constants";
-import { getNameOrMail } from "~/utils/getNameOrMail";
+} from "@/utils/constants";
+import { getNameOrMail } from "@/utils/getNameOrMail";
 
 export const teamBalanceRouter = createTRPCRouter({
   create: protectedProcedure

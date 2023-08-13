@@ -4,18 +4,18 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
-import { Badge } from "~/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "~/components/ui/card";
-import { useToast } from "~/components/ui/use-toast";
+} from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
-import { api } from "~/utils/api";
+import { api } from "@/utils/api";
 
 const Home: NextPage = () => {
   const { toast } = useToast();

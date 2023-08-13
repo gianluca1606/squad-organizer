@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 import {
     ColumnDef,
@@ -16,14 +16,14 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { useLocalStorage } from '@mantine/hooks';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { Checkbox } from '~/components/ui/checkbox';
-import { useToast } from '~/components/ui/use-toast';
-import { RouterOutputs, api } from '~/utils/api';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/components/ui/use-toast';
+import { RouterOutputs, api } from '@/utils/api';
 import Statistics from '../Statistics';
 import { CreateOrEditTeamBalanceEntry } from '../forms/CreateOrEditTeamBalanceEntry';
 import { DataTableColumnHeader } from '../table/data-table-column-header';
