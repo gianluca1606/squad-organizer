@@ -20,6 +20,10 @@ const pages = [
         href: '/terms-of-service',
     },
     {
+        title: 'Cookies',
+        href: '/cookies',
+    },
+    {
         title: 'Contact',
         href: '/contact',
     },

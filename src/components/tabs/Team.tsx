@@ -107,15 +107,26 @@ export const Team = () => {
                             <p className="font-normal text-gray-700 dark:text-gray-400">
                                 Share this link with your team members:
                             </p>
-                            <Input
-                                type="text"
-                                name="shareurl"
-                                id="share-team-url"
-                                readOnly={true}
-                                onClick={copyToClipBoard}
-                                value={linkToShare}
-                                className="cursor-pointer"
-                            />
+                            <div className="flex space-x-2">
+                                <label
+                                    className="sr-only text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    htmlFor="link">
+                                    Link
+                                </label>
+                                <input
+                                    className="flex h-10 w-full cursor-pointer rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    name="shareurl"
+                                    id="share-team-url"
+                                    readOnly
+                                    onClick={copyToClipBoard}
+                                    value={linkToShare}
+                                />
+                                <button
+                                    onClick={copyToClipBoard}
+                                    className="inline-flex h-10 shrink-0 items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground ring-offset-background transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
+                                    Copy Link
+                                </button>
+                            </div>
                             <TeamMembersList></TeamMembersList>
                         </>
                     )}
