@@ -1,11 +1,10 @@
-import { User } from '@clerk/nextjs/api';
+import { type User } from '@clerk/nextjs/api';
 import { clerkClient } from '@clerk/nextjs/server';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { TeamDataWithAlreadyInTeam } from '@/interfaces/CreateEditTeamProps';
-import { PublicUser } from '@/interfaces/PublicUser';
+import { type PublicUser } from '@/interfaces/PublicUser';
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/api/trpc';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 import { AuthUtil } from '@/utils/auth-utils';
 import { OWNER, PUNISHMENT_OR_CONTRIBUTION } from '@/utils/constants';
 

@@ -36,7 +36,7 @@ const Home: NextPage = () => {
                                     a. User Account Information: When you sign up for an account or log in to Squad
                                     Organizer, we utilize Clerk for user management and social logins. Clerk handles the
                                     collection and management of your account information, including your name, email
-                                    address, and social media profiles. Please refer to Clerk's Privacy Policy to
+                                    address, and social media profiles. Please refer to Clerk&apos;s Privacy Policy to
                                     understand how they handle your data.
                                 </li>
                                 <li>
@@ -90,9 +90,10 @@ const Home: NextPage = () => {
                                     privacy policies, and we encourage you to review them.
                                 </li>
                                 <li>
-                                    c. Vercel Logs: It's important to note that when accessing Squad Organizer, Vercel,
-                                    the platform where our app is deployed, may automatically log certain information,
-                                    including IP addresses. However, we do not actively use this data for any purpose.
+                                    c. Vercel Logs: It&apos;s important to note that when accessing Squad Organizer,
+                                    Vercel, the platform where our app is deployed, may automatically log certain
+                                    information, including IP addresses. However, we do not actively use this data for
+                                    any purpose.
                                 </li>
                             </ul>
                         </li>
@@ -107,7 +108,7 @@ const Home: NextPage = () => {
                         </li>
 
                         <li>
-                            Children's Privacy:
+                            Children&apos;s Privacy:
                             <br />
                             Squad Organizer is intended for users who are 18 years of age or older. We do not knowingly
                             collect personal information from children under the age of 18. If you believe that we have

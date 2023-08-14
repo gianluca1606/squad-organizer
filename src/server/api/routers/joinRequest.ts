@@ -1,242 +1,216 @@
-import { User } from "@clerk/nextjs/api";
-import { clerkClient } from "@clerk/nextjs/server";
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import { type User } from '@clerk/nextjs/api';
+import { clerkClient } from '@clerk/nextjs/server';
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "@/server/api/trpc";
-import { AuthUtil } from "@/utils/auth-utils";
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
+import { AuthUtil } from '@/utils/auth-utils';
 
 export const joinRequestRouter = createTRPCRouter({
-  create: protectedProcedure
-    .input(
-      z.object({
-        teamId: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const isUserAlreadyInTeam = await ctx.prisma.teamMember.findFirst({
-        where: {
-          clerkId: ctx.auth.userId,
-          teamId: input.teamId,
-        },
-      });
+    create: protectedProcedure
+        .input(
+            z.object({
+                teamId: z.string(),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const isUserAlreadyInTeam = await ctx.prisma.teamMember.findFirst({
+                where: {
+                    clerkId: ctx.auth.userId,
+                    teamId: input.teamId,
+                },
+            });
 
-      if (isUserAlreadyInTeam) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "You are already in this team",
+            if (isUserAlreadyInTeam) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'You are already in this team',
+                });
+            }
+
+            const isUserAlreadyRequestedToJoin = await ctx.prisma.joinRequest.findFirst({
+                where: {
+                    clerkId: ctx.auth.userId,
+                    teamId: input.teamId,
+                },
+            });
+
+            if (isUserAlreadyRequestedToJoin) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'You have already requested to join this team',
+                });
+            }
+
+            const data = await ctx.prisma.joinRequest.create({
+                data: {
+                    teamId: input.teamId,
+                    clerkId: ctx.auth.userId,
+                },
+            });
+            return data;
+        }),
+
+    delete: protectedProcedure
+        .input(
+            z.object({
+                joinRequestId: z.string(),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const joinRequest = await ctx.prisma.joinRequest.findFirst({
+                where: {
+                    id: input.joinRequestId,
+                },
+            });
+
+            if (!joinRequest) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'Join request not found',
+                });
+            }
+
+            const isUserManagerOrOwner = await AuthUtil.isUserManagerOrOwner(
+                ctx.prisma,
+                joinRequest.teamId,
+                ctx.auth.userId
+            );
+
+            const isUserSender = joinRequest.clerkId === ctx.auth.userId;
+
+            if (!isUserManagerOrOwner && !isUserSender) {
+                if (!isUserManagerOrOwner) {
+                    throw new TRPCError({
+                        code: 'FORBIDDEN',
+                        message: 'You are not a manager of this team',
+                    });
+                }
+
+                if (!isUserSender) {
+                    throw new TRPCError({
+                        code: 'FORBIDDEN',
+                        message: 'You are not the sender of this join request',
+                    });
+                }
+            }
+
+            return await ctx.prisma.joinRequest.delete({
+                where: {
+                    id: input.joinRequestId,
+                },
+            });
+        }),
+
+    getAllForLoggedInUser: protectedProcedure.query(async ({ ctx }) => {
+        const list = await ctx.prisma.joinRequest.findMany({
+            where: {
+                clerkId: ctx.auth.userId,
+            },
+            include: {
+                team: true,
+            },
         });
-      }
 
-      const isUserAlreadyRequestedToJoin =
-        await ctx.prisma.joinRequest.findFirst({
-          where: {
-            clerkId: ctx.auth.userId,
-            teamId: input.teamId,
-          },
-        });
-
-      if (isUserAlreadyRequestedToJoin) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "You have already requested to join this team",
-        });
-      }
-
-      const data = await ctx.prisma.joinRequest.create({
-        data: {
-          teamId: input.teamId,
-          clerkId: ctx.auth.userId,
-        },
-      });
-      return data;
+        return list;
     }),
 
-  delete: protectedProcedure
-    .input(
-      z.object({
-        joinRequestId: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const joinRequest = await ctx.prisma.joinRequest.findFirst({
-        where: {
-          id: input.joinRequestId,
-        },
-      });
+    getAllForTeam: protectedProcedure.input(z.object({ teamId: z.string() })).query(async ({ ctx, input }) => {
+        const isUserManager = await AuthUtil.isUserManager(ctx.prisma, input.teamId, ctx.auth.userId);
 
-      if (!joinRequest) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Join request not found",
-        });
-      }
+        const isUserOwner = await AuthUtil.isUserOwner(ctx.prisma, input.teamId, ctx.auth.userId);
 
-      const isUserManagerOrOwner = await AuthUtil.isUserManagerOrOwner(
-        ctx.prisma,
-        joinRequest.teamId,
-        ctx.auth.userId
-      );
-
-      const isUserSender = joinRequest.clerkId === ctx.auth.userId;
-
-      if (!isUserManagerOrOwner && !isUserSender) {
-        if (!isUserManagerOrOwner) {
-          throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "You are not a manager of this team",
-          });
+        const isUserOwnerOrManager = !!(isUserManager || isUserOwner);
+        if (!isUserOwnerOrManager) {
+            throw new TRPCError({
+                code: 'FORBIDDEN',
+                message: 'You are not a manager of this team',
+            });
         }
 
-        if (!isUserSender) {
-          throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "You are not the sender of this join request",
-          });
+        const list = await ctx.prisma.joinRequest.findMany({
+            where: {
+                teamId: input.teamId,
+            },
+        });
+
+        if (list.length > 0) {
+            const members: User[] = await clerkClient.users.getUserList({
+                userId: list.map((clerk) => clerk.clerkId),
+            });
+            // create an array of users with the ids of list
+
+            const requests = members.map((member) => {
+                return {
+                    id: member.id,
+                    birthday: member.birthday,
+                    username: member.username,
+                    firstName: member.firstName,
+                    lastName: member.lastName,
+                    emailAddresses: member.emailAddresses,
+                    profileImageUrl: member.profileImageUrl,
+                    joinRequestId: list.find((clerk) => clerk.clerkId === member.id)?.id,
+                };
+            });
+
+            return requests;
+        } else return null;
+    }),
+
+    accept: protectedProcedure.input(z.object({ joinRequestId: z.string() })).mutation(async ({ ctx, input }) => {
+        const joinRequest = await ctx.prisma.joinRequest.findFirst({
+            where: {
+                id: input.joinRequestId,
+            },
+        });
+
+        if (!joinRequest) {
+            throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'Join request not found',
+            });
         }
-      }
 
-      return await ctx.prisma.joinRequest.delete({
-        where: {
-          id: input.joinRequestId,
-        },
-      });
-    }),
+        const isUserManager = await AuthUtil.isUserManager(ctx.prisma, joinRequest.teamId, ctx.auth.userId);
 
-  getAllForLoggedInUser: protectedProcedure.query(async ({ ctx, input }) => {
-    const list = await ctx.prisma.joinRequest.findMany({
-      where: {
-        clerkId: ctx.auth.userId,
-      },
-      include: {
-        team: true,
-      },
-    });
+        const isUserOwner = await AuthUtil.isUserOwner(ctx.prisma, joinRequest.teamId, ctx.auth.userId);
 
-    return list;
-  }),
+        const isUserOwnerOrManager = !!(isUserManager || isUserOwner);
 
-  getAllForTeam: protectedProcedure
-    .input(z.object({ teamId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const isUserManager = await AuthUtil.isUserManager(
-        ctx.prisma,
-        input.teamId,
-        ctx.auth.userId
-      );
+        if (!isUserOwnerOrManager) {
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'You are not a manager of this team',
+            });
+        }
 
-      const isUserOwner = await AuthUtil.isUserOwner(
-        ctx.prisma,
-        input.teamId,
-        ctx.auth.userId
-      );
-
-      const isUserOwnerOrManager = !!(isUserManager || isUserOwner);
-      if (!isUserOwnerOrManager) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You are not a manager of this team",
-        });
-      }
-
-      const list = await ctx.prisma.joinRequest.findMany({
-        where: {
-          teamId: input.teamId,
-        },
-      });
-
-      if (list.length > 0) {
-        const members: User[] = await clerkClient.users.getUserList({
-          userId: list.map((clerk) => clerk.clerkId),
-        });
-        // create an array of users with the ids of list
-
-        const requests = members.map((member) => {
-          return {
-            id: member.id,
-            birthday: member.birthday,
-            username: member.username,
-            firstName: member.firstName,
-            lastName: member.lastName,
-            emailAddresses: member.emailAddresses,
-            profileImageUrl: member.profileImageUrl,
-            joinRequestId: list.find((clerk) => clerk.clerkId === member.id)
-              ?.id,
-          };
+        const isUserAlreadyInTeam = await ctx.prisma.teamMember.findFirst({
+            where: {
+                clerkId: joinRequest.clerkId,
+                teamId: joinRequest.teamId,
+            },
         });
 
-        return requests;
-      } else return null;
-    }),
+        if (isUserAlreadyInTeam) {
+            throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'User is already in this team',
+            });
+        }
 
-  accept: protectedProcedure
-    .input(z.object({ joinRequestId: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const joinRequest = await ctx.prisma.joinRequest.findFirst({
-        where: {
-          id: input.joinRequestId,
-        },
-      });
-
-      if (!joinRequest) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Join request not found",
+        await ctx.prisma.teamMember.create({
+            data: {
+                clerkId: joinRequest.clerkId,
+                teamId: joinRequest.teamId,
+            },
         });
-      }
 
-      const isUserManager = await AuthUtil.isUserManager(
-        ctx.prisma,
-        joinRequest.teamId,
-        ctx.auth.userId
-      );
-
-      const isUserOwner = await AuthUtil.isUserOwner(
-        ctx.prisma,
-        joinRequest.teamId,
-        ctx.auth.userId
-      );
-
-      const isUserOwnerOrManager = !!(isUserManager || isUserOwner);
-
-      if (!isUserOwnerOrManager) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You are not a manager of this team",
+        await ctx.prisma.joinRequest.delete({
+            where: {
+                id: input.joinRequestId,
+            },
         });
-      }
 
-      const isUserAlreadyInTeam = await ctx.prisma.teamMember.findFirst({
-        where: {
-          clerkId: joinRequest.clerkId,
-          teamId: joinRequest.teamId,
-        },
-      });
-
-      if (isUserAlreadyInTeam) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "User is already in this team",
-        });
-      }
-
-      await ctx.prisma.teamMember.create({
-        data: {
-          clerkId: joinRequest.clerkId,
-          teamId: joinRequest.teamId,
-        },
-      });
-
-      await ctx.prisma.joinRequest.delete({
-        where: {
-          id: input.joinRequestId,
-        },
-      });
-
-      return true;
+        return true;
     }),
 });

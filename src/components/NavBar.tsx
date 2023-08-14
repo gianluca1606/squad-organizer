@@ -1,10 +1,10 @@
 'use client';
-import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
+import { UserButton, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { api } from '@/utils/api';
+
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/router';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -27,7 +27,7 @@ export function NavBar() {
             setLocaleCookie('en');
             setLocaleCookieVal('locale', 'en', { path: '/' });
         } else {
-            setLocaleCookie(localeCookieVal.locale);
+            setLocaleCookie(localeCookieVal.locale as string);
         }
     }, []);
 

@@ -24,6 +24,7 @@ model Team {
     role                         Role[]
     appointmentDays              Appointment[]
     appointmentParticipation     AppointmentParticipation[]
+    CanceledAppointment          CanceledAppointment[]
 }
 
 model TeamMember {
@@ -49,24 +50,26 @@ model Role {
 }
 
 model Appointment {
-    id                  String                @id @default(cuid())
-    createdAt           DateTime              @default(now())
-    updatedAt           DateTime              @updatedAt
-    deleted             Boolean               @default(false) // Soft deletion flag
-    date                DateTime?
-    time                String
-    type                String
-    team                Team                  @relation(fields: [teamId], references: [id], onDelete: Cascade)
-    teamId              String
-    canceledAppointment CanceledAppointment[]
+    id          String    @id @default(cuid())
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    deleted     Boolean   @default(false) // Soft deletion flag
+    date        DateTime?
+    recurring   Boolean   @default(false)
+    time        String
+    type        String
+    description String
+    team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId      String
 }
 
 model CanceledAppointment {
-    id            String                @id @default(cuid())
-    appointment   Appointment @relation(fields: [appointmentId], references: [id])
-    appointmentId String
-    canceledOn    DateTime    @default(now())
-    clerkId       String
+    id         String   @id @default(cuid())
+    date       DateTime
+    canceledOn DateTime @default(now())
+    clerkId    String
+    team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId     String
 }
 
 model AppointmentParticipation {
@@ -74,9 +77,9 @@ model AppointmentParticipation {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     clerkId   String
+    date      DateTime
     team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
     teamId    String
-    status    String
 }
 
 model JoinRequest {

@@ -1,9 +1,8 @@
-import { clerkClient } from '@clerk/nextjs/server';
-import { PrismaClient } from '@prisma/client';
+import { type PrismaClient } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/api/trpc';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 import { AuthUtil } from '@/utils/auth-utils';
 import { OWNER } from '@/utils/constants';
 

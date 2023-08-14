@@ -1,4 +1,4 @@
-import { EmailAddress } from '@clerk/nextjs/api';
+import { type EmailAddress } from '@clerk/nextjs/api';
 
 export type PublicUser = {
     id: string;

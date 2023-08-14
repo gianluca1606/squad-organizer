@@ -1,42 +1,45 @@
 {
-  "Dashboard": {
-    "tabs": {
-      "appointments": "Appointments",
-      "balance": "Balance",
-      "personal": "Personal",
-      "squad": "Squad"
+    "Dashboard": {
+        "tabs": {
+            "appointments": "Appointments",
+            "balance": "Balance",
+            "personal": "Personal",
+            "squad": "Squad"
+        }
+    },
+    "Home": {
+        "description": "Street photography captures real-life moments and human interactions in public places. It is a way to tell visual stories and freeze fleeting moments of time, turning the ordinary into the extraordinary.",
+        "title": "Street photography"
+    },
+    "Settings": {
+        "english": "english",
+        "german": "German",
+        "select": "test 123"
+    },
+    "Team": {
+        "balance": {
+            "description": "Here you can see all punishments and contributions types of your squad test",
+            "filter": "Filter name/sponsor",
+            "table": {
+                "date": "Date",
+                "description": "Description",
+                "first": "Go to first page",
+                "last": "Go to last page",
+                "name": "Name/Sponsor",
+                "next": "Go to next page",
+                "of": "of",
+                "page": "Page",
+                "payed": "Payed",
+                "previous": "Go to previous page",
+                "price": "Price",
+                "reason": "Reason",
+                "rows": "Rows per page",
+                "view": "View"
+            },
+            "title": "Balance"
+        }
+    },
+    "Privacy": {
+        "heading": "Privacy Policy for Squad Organizer Effective Date: [23.05.2023]"
     }
-  },
-  "Home": {
-    "description": "Street photography captures real-life moments and human interactions in public places. It is a way to tell visual stories and freeze fleeting moments of time, turning the ordinary into the extraordinary.",
-    "title": "Street photography"
-  },
-  "Settings": {
-    "english": "english",
-    "german": "German",
-    "select": "test 123"
-  },
-  "Team": {
-    "balance": {
-      "description": "Here you can see all punishments and contributions types of your squad test",
-      "filter": "Filter name/sponsor",
-      "table": {
-        "date": "Date",
-        "description": "Description",
-        "first": "Go to first page",
-        "last": "Go to last page",
-        "name": "Name/Sponsor",
-        "next": "Go to next page",
-        "of": "of",
-        "page": "Page",
-        "payed": "Payed",
-        "previous": "Go to previous page",
-        "price": "Price",
-        "reason": "Reason",
-        "rows": "Rows per page",
-        "view": "View"
-      },
-      "title": "Balance"
-    }
-  }
 }

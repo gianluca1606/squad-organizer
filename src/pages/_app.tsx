@@ -3,12 +3,12 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import { NextIntlProvider } from 'next-intl';
 import { ThemeProvider } from 'next-themes';
-import { AppContext, AppProps, type AppType } from 'next/app';
+import { type AppContext, type AppProps, type AppType } from 'next/app';
 import Layout from '@/components/Layout';
 import { Toaster } from '@/components/ui/toaster';
 import '@/styles/globals.css';
 import { api } from '@/utils/api';
-import CookieConsent, { Cookies } from 'react-cookie-consent';
+import CookieConsent from 'react-cookie-consent';
 import { useRouter } from 'next/router';
 
 // adjust the pageProps to have a `messages` property

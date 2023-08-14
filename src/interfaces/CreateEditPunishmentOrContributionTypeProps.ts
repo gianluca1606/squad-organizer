@@ -1,7 +1,7 @@
-import { PunishmentOrContributionType } from "@prisma/client";
+import { type PunishmentOrContributionType } from '@prisma/client';
 
 export type CreateEditPusnihmentOrContributionTypeProps = {
-  data: PunishmentOrContributionType | null | undefined;
-  edit: boolean;
-  refetchPunishmentAndContributionList: () => void;
+    data: PunishmentOrContributionType | null | undefined;
+    edit: boolean;
+    refetchPunishmentAndContributionList: () => void;
 };
