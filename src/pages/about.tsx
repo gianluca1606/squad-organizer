@@ -1,11 +1,8 @@
-import { GetServerSidePropsContext, type NextPage } from 'next';
+import { type GetServerSidePropsContext, type NextPage } from 'next';
 import Head from 'next/head';
 import pick from 'lodash/pick';
-import Image from 'next/image';
 
-import { api } from '@/utils/api';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 
 export type NextPageWithMessages<P = {}, IP = P> = NextPage<P, IP> & {
     messages: string[];

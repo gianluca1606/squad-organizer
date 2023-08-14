@@ -16,7 +16,7 @@ const InternalServerErrorPage: NextPage = () => {
                         Something has gone seriously wrong
                     </h1>
                     <p className="mb-5 text-base font-normal text-gray-500 dark:text-gray-400 md:text-lg">
-                        It's always time for a coffee break. We should be back by the time you finish your coffee.
+                        It&apos;s always time for a coffee break. We should be back by the time you finish your coffee.
                     </p>
                     <a
                         href="https://flowbite-admin-dashboard.vercel.app/"

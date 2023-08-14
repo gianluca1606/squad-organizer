@@ -93,9 +93,9 @@ const Cookies: NextPage = () => {
                     </p>
 
                     <p className="mb-8 overflow-auto text-center font-light  sm:text-xl lg:mb-16">
-                        You can modify your cookie preferences at any time by accessing the "Cookie Settings" option
-                        within the app's settings menu. Please note that if you disable certain cookies, it may affect
-                        your app experience and limit the availability of certain features.
+                        You can modify your cookie preferences at any time by accessing the &quot;Cookie Settings&quot;
+                        option within the app's settings menu. Please note that if you disable certain cookies, it may
+                        affect your app experience and limit the availability of certain features.
                     </p>
                     <p className="mb-8 overflow-auto text-center font-light  sm:text-xl lg:mb-16">
                         By using our app, you acknowledge that you have read and understood this cookie policy. If you

@@ -1,5 +1,5 @@
 import pick from 'lodash/pick';
-import { GetServerSidePropsContext, type NextPage } from 'next';
+import { type GetServerSidePropsContext, type NextPage } from 'next';
 import Head from 'next/head';
 
 import { useTranslations } from 'next-intl';

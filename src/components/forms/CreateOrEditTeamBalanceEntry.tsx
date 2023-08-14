@@ -80,8 +80,8 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
         },
     });
 
-    const save = () => {
-        handleSubmit(onSubmit)();
+    const save = async () => {
+        await handleSubmit(onSubmit)();
     };
 
     useEffect(() => {
@@ -266,10 +266,7 @@ export const CreateOrEditTeamBalanceEntry: FC<CreateEditBalanceProps> = ({
 
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button
-                            
-                            disabled={createBalanceEntry.isLoading || editBalanceEntry.isLoading}
-                            onClick={save}>
+                        <Button disabled={createBalanceEntry.isLoading || editBalanceEntry.isLoading} onClick={save}>
                             {createBalanceEntry.isLoading || editBalanceEntry.isLoading ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             ) : (
