@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { type FC, type ReactNode, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 interface Props {

@@ -1,6 +1,6 @@
 'use client';
 
-import { Table } from '@tanstack/react-table';
+import { type Table } from '@tanstack/react-table';
 import { Check, ChevronsUpDown, X } from 'lucide-react';
 
 import { useEffect, useState } from 'react';

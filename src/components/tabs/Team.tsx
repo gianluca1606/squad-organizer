@@ -4,10 +4,9 @@ import CreateTeamForm from '@/components/forms/CreateTeamForm';
 import PunishmentsAndContributionsTable from '@/components/lists/PunishmentsAndContributionsTable';
 import TeamMembersList from '@/components/lists/TeamMembersList';
 
-import { PunishmentOrContributionType } from '@prisma/client';
+import { type PunishmentOrContributionType } from '@prisma/client';
 import { DeleteTeamDialog } from '@/components/forms/DeleteTeamDialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { api } from '@/utils/api';
 import { ReceivedJoinRequests } from '../ReceivedJoinRequests';
@@ -16,11 +15,11 @@ import { useLocalStorage } from '@mantine/hooks';
 
 export const Team = () => {
     const { toast } = useToast();
-    const [actualTeam, setActualTeamFunction] = useLocalStorage({
+    const [actualTeam] = useLocalStorage({
         defaultValue: '',
         key: 'teamId',
     });
-    const [value, copy] = useCopyToClipboard();
+    const [, copy] = useCopyToClipboard();
 
     const [linkToShare, setLinkToShare] = useState('');
     const [punishmentsAndContributionListData, setPunishmentOrContributionListData] = useState<

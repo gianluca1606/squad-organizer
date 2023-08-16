@@ -71,8 +71,8 @@ const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
 };
 
 MyApp.getInitialProps = async (context: AppContext) => {
-    let localeCookie = getCookieValue('locale', context);
-    let themeCookie = getCookieValue('theme', context);
+    const localeCookie = getCookieValue('locale', context);
+    const themeCookie = getCookieValue('theme', context);
 
     let locale;
     let theme;

@@ -1,9 +1,9 @@
 import { useLocalStorage } from '@mantine/hooks';
-import { ChangeEvent, FC, useEffect, useState } from 'react';
+import { type ChangeEvent, type FC, useEffect, useState } from 'react';
 import { useDebounce } from 'usehooks-ts';
 import { Badge } from '@/components/ui/badge';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import { PublicUser } from '@/interfaces/PublicUser';
+import { type PublicUser } from '@/interfaces/PublicUser';
 import { api } from '@/utils/api';
 import { getNameOrMail } from '@/utils/getNameOrMail';
 import UserListDropDown from '../UserListDropDown';
@@ -12,7 +12,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Input } from '@/components/ui/input';
 
 const TeamMembersList: FC = () => {
-    const [actualTeam, setActualTeamFunction] = useLocalStorage({
+    const [actualTeam] = useLocalStorage({
         defaultValue: '',
         key: 'teamId',
     });
