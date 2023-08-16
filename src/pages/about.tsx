@@ -1,6 +1,7 @@
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import Head from 'next/head';
 import pick from 'lodash/pick';
+import Image from 'next/image';
 
 import { useTranslations } from 'next-intl';
 
@@ -37,7 +38,7 @@ const About: NextPageWithMessages = () => {
                         </p>
                     </div>
                     <div className="hidden lg:col-span-5 lg:mt-0 lg:flex">
-                        <img src="/background.jpg" alt="mockup" />
+                        <Image src="/background.jpg" alt="mockup" />
                     </div>
                 </div>
             </section>

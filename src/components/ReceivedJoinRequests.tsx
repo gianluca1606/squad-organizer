@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { api } from '@/utils/api';
 
@@ -45,8 +44,8 @@ export const ReceivedJoinRequests = () => {
                 title: 'Join request removed',
                 description: 'The user has not been added to the team',
             });
-            receivedJoinRequests.refetch();
-            sentJoinRequests.refetch();
+            void receivedJoinRequests.refetch();
+            void sentJoinRequests.refetch();
         },
         onError: (error) => {
             toast({

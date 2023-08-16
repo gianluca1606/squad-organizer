@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 
 const Cookies: NextPage = () => {
     const [defaultValue, setDefaultValue] = useState('option-two');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [consentCookieVal, setConsentCookieVal, removeConsentCookieVal] = useCookies(['CookieConsent']);
 
     useEffect(

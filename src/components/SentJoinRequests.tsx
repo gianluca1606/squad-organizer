@@ -17,7 +17,7 @@ export const SentJoinRequests = () => {
                 title: 'Join request removed',
                 description: 'The user has not been added to the team',
             });
-            sentJoinRequests.refetch();
+            void sentJoinRequests.refetch();
         },
         onError: (error) => {
             toast({

@@ -1,11 +1,11 @@
-import { PunishmentOrContributionType } from '@prisma/client';
+import { type PunishmentOrContributionType } from '@prisma/client';
 import React from 'react';
 import { CreateOrEditPunishmentOrContributionDialog } from '../forms/CreateOrEditPunishmentDialog';
 import { DeleteContributionOrPunishmentType } from '../forms/DeleteContributionOrPunishmentDialog';
 
 import {
-    ColumnDef,
-    SortingState,
+    type ColumnDef,
+    type SortingState,
     flexRender,
     getCoreRowModel,
     getPaginationRowModel,
