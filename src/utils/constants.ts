@@ -3,3 +3,5 @@ export const SPONSOR = 'sponsor';
 export const EXPENSES = 'expenses';
 export const PUNISHMENT_OR_CONTRIBUTION = 'punishmentOrContribution';
 export const OWNER = 'OWNER';
+
+export const APPOINTMENT_TRAINING = 'TRAINING';

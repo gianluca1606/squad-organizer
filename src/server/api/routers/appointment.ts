@@ -7,89 +7,133 @@ export const appointmentRouter = createTRPCRouter({
     createTraining: protectedProcedure
         .input(
             z.object({
-                id: z.string().optional(),
-                day: z.number(),
-                date: z.date().optional(),
+                date: z.date(),
                 teamId: z.string(),
-                clerkId: z.string(),
+                recurring: z.boolean(),
+                description: z.string(),
+                type: z.string(),
             })
         )
         .mutation(async ({ ctx, input }) => {
             const isUserManagerOrOwner = await AuthUtil.isUserManagerOrOwner(ctx.prisma, input.teamId, ctx.auth.userId);
             if (!isUserManagerOrOwner) throw new TRPCError({ code: 'FORBIDDEN' });
+
+            const newAppointment = await ctx.prisma.appointment.create({
+                data: {
+                    // Construct data object based on input
+                    date: input.date,
+                    teamId: input.teamId,
+                    recurring: input.recurring,
+                    description: input.description,
+                    type: input.type,
+                },
+            });
+
+            return newAppointment;
         }),
 
     editTraining: protectedProcedure
         .input(
             z.object({
-                id: z.string().optional(),
-                day: z.number(),
-                date: z.date().optional(),
+                id: z.string(),
                 teamId: z.string(),
-                clerkId: z.string(),
+                isDeleted: z.boolean(),
+                description: z.string().optional(),
             })
         )
         .mutation(async ({ ctx, input }) => {
             const isUserManagerOrOwner = await AuthUtil.isUserManagerOrOwner(ctx.prisma, input.teamId, ctx.auth.userId);
-            if (!isUserManagerOrOwner) throw new TRPCError({ code: 'FORBIDDEN' });
+            if (!isUserManagerOrOwner) {
+                throw new TRPCError({ code: 'FORBIDDEN' });
+            }
+
+            // Fetch the training appointment by ID
+            const trainingAppointment = await ctx.prisma.appointment.findUnique({
+                where: { id: input.id },
+            });
+
+            if (!trainingAppointment) {
+                throw new TRPCError({ code: 'NOT_FOUND' });
+            }
+
+            // Update the appointment based on the input
+            const updatedTraining = await ctx.prisma.appointment.update({
+                where: { id: input.id },
+                data: {
+                    deleted: input.isDeleted,
+                    description: input.description,
+                },
+            });
+
+            return updatedTraining;
         }),
 
-    createEvent: protectedProcedure
+    changeAppointment: protectedProcedure
         .input(
             z.object({
-                id: z.string().optional(),
-                day: z.number(),
-                date: z.date().optional(),
+                id: z.string(),
                 teamId: z.string(),
-                clerkId: z.string(),
+                // Add any other properties you want to modify here
+                // For example: day: z.number().optional(),
+                // date: z.date().optional(),
+                // clerkId: z.string().optional(),
             })
         )
         .mutation(async ({ ctx, input }) => {
             const isUserManagerOrOwner = await AuthUtil.isUserManagerOrOwner(ctx.prisma, input.teamId, ctx.auth.userId);
-            if (!isUserManagerOrOwner) throw new TRPCError({ code: 'FORBIDDEN' });
+            if (!isUserManagerOrOwner) {
+                throw new TRPCError({ code: 'FORBIDDEN' });
+            }
+
+            // Fetch the appointment by ID
+            const appointment = await ctx.prisma.appointment.findUnique({
+                where: { id: input.id },
+            });
+
+            if (!appointment) {
+                throw new TRPCError({ code: 'NOT_FOUND' });
+            }
+
+            // Update the appointment based on the input
+            const updatedAppointment = await ctx.prisma.appointment.update({
+                where: { id: input.id },
+                data: {
+                    // Update other properties based on the input
+                    // For example: day: input.day,
+                    // date: input.date,
+                    // clerkId: input.clerkId,
+                },
+            });
+
+            return updatedAppointment;
         }),
 
-    editEvent: protectedProcedure
+    getUpcomingNonRecurringEvents: protectedProcedure
         .input(
             z.object({
-                id: z.string().optional(),
-                day: z.number(),
-                date: z.date().optional(),
                 teamId: z.string(),
-                clerkId: z.string(),
             })
         )
-        .mutation(async ({ ctx, input }) => {
-            const isUserManagerOrOwner = await AuthUtil.isUserManagerOrOwner(ctx.prisma, input.teamId, ctx.auth.userId);
-            if (!isUserManagerOrOwner) throw new TRPCError({ code: 'FORBIDDEN' });
+        .query(async ({ ctx, input }) => {
+            const isTeamMember = await AuthUtil.isUserTeamMember(ctx.prisma, input.teamId, ctx.auth.userId);
+            if (!isTeamMember) throw new TRPCError({ code: 'FORBIDDEN' });
+
+            const now = new Date();
+
+            const nonRecurringEvents = await ctx.prisma.appointment.findMany({
+                where: {
+                    teamId: input.teamId,
+                    recurring: false,
+                    date: {
+                        gte: now,
+                    },
+                },
+                take: 10,
+                orderBy: {
+                    date: 'asc',
+                },
+            });
+
+            return nonRecurringEvents;
         }),
-
-    cancelTrainingOrEvent: protectedProcedure
-        .input(
-            z.object({
-                teamBalanceEntryId: z.string(),
-                teamId: z.string(),
-            })
-        )
-        .mutation(async ({ ctx, input }) => {
-            const isUserManagerOrOwner = await AuthUtil.isUserManagerOrOwner(ctx.prisma, input.teamId, ctx.auth.userId);
-
-            if (!isUserManagerOrOwner) throw new TRPCError({ code: 'FORBIDDEN' });
-        }),
-
-    getAllTrainingAppointments: protectedProcedure
-        .input(
-            z.object({
-                teamId: z.string(),
-            })
-        )
-        .query(async ({ ctx, input }) => {}),
-
-    getUpcomingEvents: protectedProcedure
-        .input(
-            z.object({
-                teamId: z.string(),
-            })
-        )
-        .query(async ({ ctx, input }) => {}),
 });

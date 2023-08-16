@@ -50,17 +50,18 @@ model Role {
 }
 
 model Appointment {
-    id          String    @id @default(cuid())
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
-    deleted     Boolean   @default(false) // Soft deletion flag
-    date        DateTime?
-    recurring   Boolean   @default(false)
-    time        String
-    type        String
-    description String
-    team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
-    teamId      String
+    id             String                     @id @default(cuid())
+    createdAt      DateTime                   @default(now())
+    updatedAt      DateTime                   @updatedAt
+    deleted        Boolean                    @default(false)
+    date           DateTime?
+    recurring      Boolean                    @default(false)
+    day            Int?
+    type           String
+    description    String?
+    team           Team                       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId         String
+    participations AppointmentParticipation[]
 }
 
 model CanceledAppointment {
@@ -73,13 +74,15 @@ model CanceledAppointment {
 }
 
 model AppointmentParticipation {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    clerkId   String
-    date      DateTime
-    team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-    teamId    String
+    id            String       @id @default(cuid())
+    createdAt     DateTime     @default(now())
+    updatedAt     DateTime     @updatedAt
+    clerkId       String
+    date          DateTime
+    team          Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId        String
+    appointment   Appointment? @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+    appointmentId String?
 }
 
 model JoinRequest {

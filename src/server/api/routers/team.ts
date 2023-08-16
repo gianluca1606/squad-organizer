@@ -6,7 +6,7 @@ import { type PublicUser } from '@/interfaces/PublicUser';
 
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 import { AuthUtil } from '@/utils/auth-utils';
-import { OWNER, PUNISHMENT_OR_CONTRIBUTION } from '@/utils/constants';
+import { APPOINTMENT_TRAINING, OWNER, PUNISHMENT_OR_CONTRIBUTION } from '@/utils/constants';
 
 export const teamRouter = createTRPCRouter({
     create: protectedProcedure
@@ -36,6 +36,17 @@ export const teamRouter = createTRPCRouter({
                     },
                 },
             });
+
+            for (let i = 0; i < 7; i++) {
+                await ctx.prisma.appointment.create({
+                    data: {
+                        teamId: teamData.id,
+                        deleted: true,
+                        day: i + 1,
+                        type: APPOINTMENT_TRAINING,
+                    },
+                });
+            }
 
             return teamData;
         }),
@@ -243,5 +254,40 @@ export const teamRouter = createTRPCRouter({
                 punishmentsOrContributions,
                 canEditPunishmentsOrContributions: canEditPunishmentsOrContributions,
             };
+        }),
+
+    deleteNonRecurringEvent: protectedProcedure
+        .input(
+            z.object({
+                id: z.string(),
+                teamId: z.string(),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const isUserManagerOrOwner = await AuthUtil.isUserManagerOrOwner(ctx.prisma, input.teamId, ctx.auth.userId);
+            if (!isUserManagerOrOwner) {
+                throw new TRPCError({ code: 'FORBIDDEN' });
+            }
+
+            const appointment = await ctx.prisma.appointment.findUnique({
+                where: { id: input.id },
+            });
+
+            if (!appointment) {
+                throw new TRPCError({ code: 'NOT_FOUND' });
+            }
+
+            if (appointment.recurring) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'Cannot delete a recurring event.',
+                });
+            }
+
+            const deletedEvent = await ctx.prisma.appointment.delete({
+                where: { id: input.id },
+            });
+
+            return deletedEvent;
         }),
 });
